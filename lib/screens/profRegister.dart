@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:cse465ers/shared/loading.dart';
+import 'package:cse465ers/services/auth.dart';
 
 class ProfRegister extends StatefulWidget {
+  final Function toggleView;
+  ProfRegister({this.toggleView});
+
   @override
   _ProfRegisterState createState() => _ProfRegisterState();
 }
 
 class _ProfRegisterState extends State<ProfRegister> {
 
+  final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
 
@@ -224,8 +229,18 @@ class _ProfRegisterState extends State<ProfRegister> {
                       ],
                     ),
                   ),
-                  onPressed: ()  {
-                    print("KAYIT OL A BASILDI");
+                  onPressed: () async {
+                    if(_formKey.currentState.validate()){
+                      setState(() => loading = true);
+                      dynamic result = await _auth.registerProf(email, name, surname, phoneNumber, univercity, password);
+                      if(result == null) {
+                        setState(() {
+                          error = 'Lütfen Geçerli Bir Mail Giriniz';
+                          loading = false;
+                        });
+                      }
+                      Navigator.pop(context);
+                    }
                   }
                 ),
               ),

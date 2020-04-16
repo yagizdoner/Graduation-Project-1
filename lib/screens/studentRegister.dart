@@ -237,7 +237,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                       dynamic result = await _auth.registerStudent(email, name, surname, studentNumber, univercity, password);
                       if(result == null) {
                         setState(() {
-                          error = 'Please supply a valid email';
+                          error = 'Lütfen Geçerli Bir Mail Giriniz';
                           loading = false;
                         });
                       }

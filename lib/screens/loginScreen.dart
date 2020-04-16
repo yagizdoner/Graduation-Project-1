@@ -138,21 +138,47 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: () async {
                               if(_formKey.currentState.validate()){
                                 setState(() => loading = true);
-                                dynamic result = await _auth.signInWithEmailAndPassword(email, password);
-                                if(result == null) {
-                                  setState(() {
-                                    error = 'Kullanıcı Adı veya Şifre Hatalı';
-                                    loading = false;
-                                  });
+                                
+                                int login = 2;     // 0 -> Prof, 1 -> Student, 2 -> Error ;
+                                
+                                // BURAYA BİR EMAİL check ekle. Ona göre isProf doldurulsun. 
+                                // Ona göre ya studentSc ya da profSc yönlensin.
+                                
+                                if(login == 0){
+                                  dynamic result = await _auth.signInWithEmailAndPasswordProf(email, password);
+                                  if(result == null) {
+                                    setState(() {
+                                      error = 'Şifre Hatalı';
+                                      loading = false;
+                                    });
+                                  }
+                                  else{
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => ProfSc()),
+                                    );
+                                  }
+                                }
+                                else if(login == 1){
+                                  dynamic result = await _auth.signInWithEmailAndPassword(email, password);
+                                  if(result == null) {
+                                    setState(() {
+                                      error = 'Şifre Hatalı';
+                                      loading = false;
+                                    });
+                                  }
+                                  else{
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => StudentSc()),
+                                    );
+                                  }
                                 }
                                 else{
-
-                                  // BURAYA BİR EMAİL check ekle. Ona göre ya studentSc ya da profSc yönlensin.
-
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => ProfSc()),
-                                  );
+                                  setState(() {
+                                      error = 'Kullanıcı Bulunamadı';
+                                      loading = false;
+                                    });
                                 }
                               }
                             }
