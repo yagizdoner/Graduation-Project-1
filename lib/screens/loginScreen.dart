@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cse465ers/screens/forgetPassword.dart';
 import 'package:cse465ers/screens/profScreens/profSc.dart';
 import 'package:cse465ers/screens/studentScreens/studentSc.dart';
@@ -6,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:cse465ers/screens/profRegister.dart';
 import 'package:cse465ers/screens/studentRegister.dart';
 import 'package:cse465ers/services/auth.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginScreen extends StatefulWidget {
 
@@ -22,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
+  int loginStatus;
 
   // text field state
   String email = '';
@@ -137,49 +140,68 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             onPressed: () async {
                               if(_formKey.currentState.validate()){
-                                setState(() => loading = true);
-                                
-                                int login = 2;     // 0 -> Prof, 1 -> Student, 2 -> Error ;
-                                
-                                // BURAYA BİR EMAİL check ekle. Ona göre isProf doldurulsun. 
-                                // Ona göre ya studentSc ya da profSc yönlensin.
-                                
-                                if(login == 0){
-                                  dynamic result = await _auth.signInWithEmailAndPasswordProf(email, password);
-                                  if(result == null) {
-                                    setState(() {
-                                      error = 'Şifre Hatalı';
-                                      loading = false;
-                                    });
+                                setState((){ // Email Check (0 is Prof, 1 is Student)
+                                  final _fireStore = Firestore.instance;
+                                  Future getStudent() async {
+                                    return await _fireStore.collection('students').getDocuments();
                                   }
-                                  else{
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => ProfSc()),
-                                    );
+                                  getStudent().then((val){
+                                    for(int i=0 ; i<val.documents.length ; ++i){
+                                      if(email == val.documents[i].data['mail']){
+                                        loginStatus = 1; // found a student
+                                        break;
+                                      }
+                                    }
+                                  });
+                                  Future getProf() async {
+                                    return await _fireStore.collection('profs').getDocuments();
                                   }
-                                }
-                                else if(login == 1){
-                                  dynamic result = await _auth.signInWithEmailAndPassword(email, password);
-                                  if(result == null) {
-                                    setState(() {
-                                      error = 'Şifre Hatalı';
-                                      loading = false;
-                                    });
+                                  getProf().then((val){
+                                    for(int i=0 ; i<val.documents.length ; ++i){
+                                      if(email == val.documents[i].data['mail']){
+                                        loginStatus = 0; // found a professor
+                                        break;
+                                      }
+                                    }
+                                  });
+                                  
+                                  // İlk Başta loginStatus Null olduğunda if-elif blockları
+                                  // çalışmıyor ve else de olmadığından ilk tıklamada tepki vermiyor.
+                                  // Sonradan çalışıyor. Bunu anlamadım, ilerde çözüm bul !!!
+
+                                  if(loginStatus == 0){
+                                    setState(() => loading = true);
+                                    dynamic result =  _auth.signInWithEmailAndPasswordProf(email, password);
+                                    if(result == null) {
+                                      setState(() {
+                                        error = 'Şifre Hatalı';
+                                        loading = false;
+                                      });
+                                    }
+                                    else{
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => ProfSc()),
+                                      );
+                                    }
                                   }
-                                  else{
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => StudentSc()),
-                                    );
+                                  else if(loginStatus == 1){
+                                    setState(() => loading = true);
+                                    dynamic result =  _auth.signInWithEmailAndPassword(email, password);
+                                    if(result == null) {
+                                      setState(() {
+                                        error = 'Şifre Hatalı';
+                                        loading = false;
+                                      });
+                                    }
+                                    else{
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => StudentSc()),
+                                      );
+                                    }
                                   }
-                                }
-                                else{
-                                  setState(() {
-                                      error = 'Kullanıcı Bulunamadı';
-                                      loading = false;
-                                    });
-                                }
+                                });
                               }
                             }
                           ),
@@ -295,4 +317,5 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
 }
