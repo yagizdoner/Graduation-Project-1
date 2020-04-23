@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cse465ers/screens/forgetPassword.dart';
 import 'package:cse465ers/screens/profScreens/profSc.dart';
 import 'package:cse465ers/screens/studentScreens/studentSc.dart';
@@ -181,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     else{
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => ProfSc()),
+                                        MaterialPageRoute(builder: (context) => ProfSc(email)),
                                       );
                                     }
                                   }

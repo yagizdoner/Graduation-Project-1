@@ -1,28 +1,69 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cse465ers/screens/profScreens/cources.dart';
 import 'package:cse465ers/screens/profScreens/message.dart';
 import 'package:cse465ers/services/auth.dart';
 import 'package:cse465ers/shared/loading.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:cse465ers/screens/profScreens/profile.dart';
 
-
 class ProfSc extends StatefulWidget {
+  final String user;
+  const ProfSc(this.user);
+
   @override
   _ProfScState createState() => _ProfScState();
+
 }
 
 class _ProfScState extends State<ProfSc> {
-
+   
   // text field state
   String password = '';
   String univercity = '';
   String phoneNumber = '';
   String error = '';
+  String userMail = '';
+  String userName = '';
+  String userSurname = '';
 
   int bodyNum = 0; // Default -> Derslerim Ekranı
   final AuthService _auth = AuthService();
   bool loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      loading = true;
+      userMail = widget.user;
+    });
+    getUserInfo();
+    setState(() {
+      loading = false;
+    });
+  }
+
+  getUserInfo() async{
+    setState((){
+      final _fireStore = Firestore.instance;
+      Future getProf() async {
+        return await _fireStore.collection('profs').getDocuments();
+      }
+      getProf().then((val){
+        setState(() {
+          for(int i=0 ; i<val.documents.length ; ++i){
+            if(widget.user == val.documents[i].data['mail']){
+              userName = val.documents[i].data['name'];
+              userSurname = val.documents[i].data['surname'];
+              break;
+            }
+          }
+        });
+      });
+    });   
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +71,7 @@ class _ProfScState extends State<ProfSc> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Color(0xFF033140),
-        title: Text(" Kullanıcı İsmi "),
+        title: Text(userName + ' ' + userSurname),
         actions: <Widget>[
           Row(
             children: <Widget>[
@@ -48,7 +89,7 @@ class _ProfScState extends State<ProfSc> {
         ],
       ),
 
-      body: bodyScreen(bodyNum),
+      body: bodyScreen(bodyNum, userName+' '+userSurname),
 
       bottomNavigationBar: BottomAppBar(
         child: Container(
@@ -139,16 +180,16 @@ class _ProfScState extends State<ProfSc> {
     );
   }
 
-  Widget bodyScreen (bodyNum){
+  Widget bodyScreen (bodyNum, name){
     switch (bodyNum) {
       case 0:
-        return Cources();
+        return Cources(name);
       case 1:
         return Message();
       case 2:
         return Profile();
       default:
-        return Cources();
+        return Cources(name);
     }
   }
 }

@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cse465ers/services/auth.dart';
 import 'package:cse465ers/shared/loading.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -14,19 +16,56 @@ class _AddCouceState extends State<AddCouce> {
   bool loading = false;
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
+  final databaseReference = Firestore.instance;
 
   String courseName = '';
   String courseDep = '';
-  String profName = '';
+  String profName = ''; // veriden çek
+  String courseCode ='';
   String kontenjan = '';
   String error = '';
+  String userMail = '';
+  String userName = '';
+  String userSurname = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+    getUserInfo();
+  }
+
+  getUser() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    setState(() {
+      userMail = user.email;
+    });
+  }
+
+  getUserInfo() async{
+    setState((){
+      final _fireStore = Firestore.instance;
+      Future getProf() async {
+        return await _fireStore.collection('profs').getDocuments();
+      }
+      getProf().then((val){
+        for(int i=0 ; i<val.documents.length ; ++i){
+          if(userMail == val.documents[i].data['mail']){
+            userName = val.documents[i].data['name'];
+            userSurname = val.documents[i].data['surname'];
+            profName = userName + ' ' + userSurname;
+            break;
+          }
+        }
+      });
+    });   
+  }
 
   @override
   Widget build(BuildContext context) {
     return loading ? Loading() : Scaffold(
        appBar: AppBar(
         backgroundColor: Color(0xFF033140),
-        title: Text(" Kullanıcı İsmi "),
         actions: <Widget>[
           Row(
             children: <Widget>[
@@ -94,16 +133,16 @@ class _AddCouceState extends State<AddCouce> {
                         height: MediaQuery.of(context).size.height/18,
                         child: TextFormField(
                           decoration: new InputDecoration(
-                            hintText: '   Dersin Eğitmeni',
+                            hintText: '   Dersin Kodu',
                             suffixIcon: Icon(
-                              Icons.phone,
+                              Icons.code,
                               color: Color(0xFF033140),
                             ),
                           ),
                           cursorColor: Color(0xFF033140),
-                          validator: (val) => val.isEmpty ? 'Lütfen Eğitmen Giriniz' : null,
+                          validator: (val) => val.isEmpty ? 'Lütfen Ders Kodu Giriniz' : null,
                           onChanged: (val) {
-                            setState(() => profName = val);
+                            setState(() => courseCode = val);
                           },
                         ),
                       ),
@@ -112,14 +151,14 @@ class _AddCouceState extends State<AddCouce> {
                         height: MediaQuery.of(context).size.height/18,
                         child: TextFormField(
                           decoration: new InputDecoration(
-                            hintText: '   Departman',
+                            hintText: '   Bölüm',
                             suffixIcon: Icon(
                               Icons.info_outline,
                               color: Color(0xFF033140),
                             ),
                           ),
                           cursorColor: Color(0xFF033140),
-                          validator: (val) => val.isEmpty ? 'Lütfen Departman Giriniz' : null,
+                          validator: (val) => val.isEmpty ? 'Lütfen Bölüm Giriniz' : null,
                           onChanged: (val) {
                             setState(() => courseDep = val);
                           },
@@ -171,9 +210,12 @@ class _AddCouceState extends State<AddCouce> {
                 ),
                 onPressed: ()  {
                   if(_formKey.currentState.validate()){
-                    //setState(() => loading = true);
-                    // DB ye kaydet ve loading false yap, sonra dersler sekmesine geri dön.
-                    print("EKLE YE BASILDI");
+                    setState(() => loading = true);
+                    addCourseToDB(courseName, courseCode, courseDep, kontenjan, profName);
+                    setState(() => loading = false);                                  
+                    setState(() {
+                      error = 'Ders Eklendi';
+                    });
                   }
                   else{
                     setState(() {
@@ -193,5 +235,17 @@ class _AddCouceState extends State<AddCouce> {
         ),
       ),
     );
+  }
+ 
+  void addCourseToDB(String name, String code, String dep, String kont, String prof ) async {
+    await databaseReference.collection("Cources")
+        .document(code)
+        .setData({
+          'Ders Adı': name,
+          'Ders Kodu': code,
+          'Ders Prof': prof,
+          'Bölüm': dep,
+          'Kontenjan': kont,
+    });
   }
 }

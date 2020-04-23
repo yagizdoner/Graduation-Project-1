@@ -1,26 +1,50 @@
+import 'package:cse465ers/services/auth.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class Profile extends StatefulWidget {
+class UpdateCourse extends StatefulWidget {
   @override
-  _ProfileState createState() => _ProfileState();
+  _UpdateCourseState createState() => _UpdateCourseState();
 }
 
-class _ProfileState extends State<Profile> {
-  
-  String password = '';
-  String univercity = '';
-  String phoneNumber = '';
-  String error = '';
-  bool loading = false;
+class _UpdateCourseState extends State<UpdateCourse> {
 
+  bool loading = false;
+  final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
 
+  String courseName = '';
+  String courseDep = '';
+  String profName = ''; // veriden çek
+  String courseCode ='';
+  String kontenjan = '';
+  String error = '';
 
   @override
   Widget build(BuildContext context) {
     return loading ? Loading() : Scaffold(
+       appBar: AppBar(
+        backgroundColor: Color(0xFF033140),
+        title: Text(" Ders İsmi "),
+        actions: <Widget>[
+          Row(
+            children: <Widget>[
+              IconButton(
+                icon : Icon(
+                  MdiIcons.logout,
+                  color: Colors.white,
+                ),
+                onPressed: () async {
+                  await _auth.signOut();
+                }
+              ),
+            ],
+          )
+        ],
+      ),
+
       backgroundColor: Color(0xFFD9E6EB),
       body: Container(
         color: Color(0xFFD9E6EB),
@@ -40,7 +64,7 @@ class _ProfileState extends State<Profile> {
                     style: BorderStyle.solid,
                   ),
                   color: Colors.white,
-                  borderRadius: new BorderRadius.all(Radius.circular(40.0)),
+                  borderRadius: new BorderRadius.all(Radius.circular(50.0)),
                 ),
                 padding: const EdgeInsets.all(8.0),
                 child: Form(
@@ -53,16 +77,16 @@ class _ProfileState extends State<Profile> {
                         height: MediaQuery.of(context).size.height/18,
                         child: TextFormField(
                           decoration: new InputDecoration(
-                            hintText: '   Üniversite',
+                            hintText: '   Ders Adı',
                             suffixIcon: Icon(
                               Icons.done_all,
                               color: Color(0xFF033140),
                             ),
                           ),
                           cursorColor: Color(0xFF033140),
-                          validator: (val) => val.isEmpty ? 'Lütfen Üniversite Giriniz' : null,
+                          validator: (val) => val.isEmpty ? 'Lütfen Ders Adı Giriniz' : null,
                           onChanged: (val) {
-                            setState(() => univercity = val);
+                            setState(() => courseName = val);
                           },
                         ),
                       ),
@@ -71,16 +95,16 @@ class _ProfileState extends State<Profile> {
                         height: MediaQuery.of(context).size.height/18,
                         child: TextFormField(
                           decoration: new InputDecoration(
-                            hintText: '   Telefon',
+                            hintText: '   Dersin Kodu',
                             suffixIcon: Icon(
-                              Icons.phone,
+                              Icons.code,
                               color: Color(0xFF033140),
                             ),
                           ),
                           cursorColor: Color(0xFF033140),
-                          validator: (val) => val.isEmpty ? 'Lütfen Telefon Giriniz' : null,
+                          validator: (val) => val.isEmpty ? 'Lütfen Ders Kodu Giriniz' : null,
                           onChanged: (val) {
-                            setState(() => phoneNumber = val);
+                            setState(() => courseCode = val);
                           },
                         ),
                       ),
@@ -89,17 +113,34 @@ class _ProfileState extends State<Profile> {
                         height: MediaQuery.of(context).size.height/18,
                         child: TextFormField(
                           decoration: new InputDecoration(
-                            hintText: '   Şifre',
+                            hintText: '   Bölüm',
                             suffixIcon: Icon(
                               Icons.info_outline,
                               color: Color(0xFF033140),
                             ),
                           ),
-                          obscureText: true,
                           cursorColor: Color(0xFF033140),
-                          validator: (val) => val.length < 6 ? 'Şifre En Az 6 Karakter Olmalı' : null,
+                          validator: (val) => val.isEmpty ? 'Lütfen Bölüm Giriniz' : null,
                           onChanged: (val) {
-                            setState(() => password = val);
+                            setState(() => courseDep = val);
+                          },
+                        ),
+                      ),
+                      SizedBox(height: MediaQuery.of(context).size.height/70),
+                      Container(
+                        height: MediaQuery.of(context).size.height/18,
+                        child: TextFormField(
+                          decoration: new InputDecoration(
+                            hintText: '   Kontenjan',
+                            suffixIcon: Icon(
+                              Icons.info_outline,
+                              color: Color(0xFF033140),
+                            ),
+                          ),
+                          cursorColor: Color(0xFF033140),
+                          validator: (val) => val.isEmpty ? 'Lütfen Kontenjan Giriniz' : null,
+                          onChanged: (val) {
+                            setState(() => kontenjan = val);
                           },
                         ),
                       ),
@@ -116,12 +157,12 @@ class _ProfileState extends State<Profile> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Icon(
-                        Icons.add,
+                        Icons.update,
                         color: Colors.white,
                       ),
                       SizedBox(width:MediaQuery.of(context).size.width/100),
                       Text(
-                        'Kaydet',
+                        'Güncelle',
                         style: TextStyle(
                           color: Colors.white,
                         ),
@@ -132,12 +173,8 @@ class _ProfileState extends State<Profile> {
                 onPressed: ()  {
                   if(_formKey.currentState.validate()){
                     //setState(() => loading = true);
-                    // DB ye kaydet ve loading false yap
-                    setState(() {
-                      error = 'Profiliniz Güncellenmiştir.';
-                      loading = false;
-                    });
-                    print("KAYDET E BASILDI");
+                    // DB ye kaydet ve loading false yap, sonra ders detay sekmesine geri dön.
+                    print("GÜNCCELLEYE YE BASILDI");
                   }
                   else{
                     setState(() {
@@ -151,32 +188,6 @@ class _ProfileState extends State<Profile> {
               Text(
                 error,
                 style: TextStyle(color: Colors.red, fontSize: 14.0),
-              ),
-              SizedBox(height:MediaQuery.of(context).size.height/10),
-              RaisedButton(
-                color: Color(0xFF033140),
-                child: Container(
-                  width: MediaQuery.of(context).size.width/3,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        Icons.delete_outline,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width:MediaQuery.of(context).size.width/100),
-                      Text(
-                        'Üyeliğimi Sil',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                onPressed: ()  {
-                  print("SİL E BASILDI");
-                }
               ),
             ],
           ),
