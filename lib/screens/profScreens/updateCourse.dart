@@ -212,7 +212,7 @@ class _UpdateCourseState extends State<UpdateCourse> {
           .collection('Cources')
           .document(widget.code)
           .updateData({'Ders Adı': name,
-                       //'Ders Kodu': code,  KODU GÜNCELLEYİM Mİ?
+                       // 'Ders Kodu': code,   YAPILMALI MI ???
                        'Bölüm': dep,
                        'Kontenjan': kont});
     } catch (e) {

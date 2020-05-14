@@ -231,12 +231,11 @@ class _ProfRegisterState extends State<ProfRegister> {
                   ),
                   onPressed: () async {
                     if(_formKey.currentState.validate()){
-                      setState(() => loading = true);
                       dynamic result = await _auth.registerProf(email, name, surname, phoneNumber, univercity, password);
+                      print("asdasdasd");
                       if(result == null) {
                         setState(() {
                           error = 'Lütfen Geçerli Bir Mail Giriniz';
-                          loading = false;
                         });
                       }
                       Navigator.pop(context);

@@ -21,13 +21,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
+  final _fireStore = Firestore.instance;
   bool loading = false;
-  int loginStatus;
+  var fut;
 
   // text field state
   String email = '';
   String password = '';
   String error = '';
+
+  @override
+  void initState(){
+    super.initState();
+  }  
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           children: <Widget>[
+            SizedBox(height: MediaQuery.of(context).size.height/40),
             Image(
               image: AssetImage('assets/logIn.png'),
               height: MediaQuery.of(context).size.height/5,
@@ -140,68 +147,45 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             onPressed: () async {
                               if(_formKey.currentState.validate()){
-                                setState((){ // Email Check (0 is Prof, 1 is Student)
-                                  final _fireStore = Firestore.instance;
-                                  Future getStudent() async {
-                                    return await _fireStore.collection('students').getDocuments();
-                                  }
-                                  getStudent().then((val){
-                                    for(int i=0 ; i<val.documents.length ; ++i){
-                                      if(email == val.documents[i].data['mail']){
-                                        loginStatus = 1; // found a student
-                                        break;
-                                      }
-                                    }
-                                  });
-                                  Future getProf() async {
-                                    return await _fireStore.collection('profs').getDocuments();
-                                  }
-                                  getProf().then((val){
-                                    for(int i=0 ; i<val.documents.length ; ++i){
-                                      if(email == val.documents[i].data['mail']){
-                                        loginStatus = 0; // found a professor
-                                        break;
-                                      }
-                                    }
-                                  });
-                                  
-                                  // İlk Başta loginStatus Null olduğunda if-elif blockları
-                                  // çalışmıyor ve else de olmadığından ilk tıklamada tepki vermiyor.
-                                  // Sonradan çalışıyor. Bunu anlamadım, ilerde çözüm bul !!!
-
-                                  if(loginStatus == 0){
-                                    setState(() => loading = true);
-                                    dynamic result =  _auth.signInWithEmailAndPasswordProf(email, password);
-                                    if(result == null) {
-                                      setState(() {
-                                        error = 'Şifre Hatalı';
-                                        loading = false;
-                                      });
-                                    }
-                                    else{
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => ProfSc(email)),
-                                      );
-                                    }
-                                  }
-                                  else if(loginStatus == 1){
-                                    setState(() => loading = true);
-                                    dynamic result =  _auth.signInWithEmailAndPassword(email, password);
-                                    if(result == null) {
-                                      setState(() {
-                                        error = 'Şifre Hatalı';
-                                        loading = false;
-                                      });
-                                    }
-                                    else{
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => StudentSc()),
-                                      );
-                                    }
-                                  }
+                                setState(() {
+                                  loading = true;
                                 });
+                                fut = await getUserType();  
+                                if(fut == 0){
+                                  dynamic result =  _auth.signInWithEmailAndPasswordProf(email, password);
+                                  if(result == null) {
+                                    setState(() {
+                                      error = 'Şifre Hatalı';
+                                      loading = false;
+                                    });
+                                  }
+                                  else{
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => ProfSc(email)),
+                                    );
+                                  }
+                                }
+                                else if(fut == 1){
+                                  dynamic result =  _auth.signInWithEmailAndPassword(email, password);
+                                  if(result == null) {
+                                    setState(() {
+                                      error = 'Şifre Hatalı';
+                                      loading = false;
+                                    });
+                                  }
+                                  else{
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => StudentSc()),
+                                    );
+                                  }
+                                }
+                                else{
+                                  setState(() {
+                                    error = "Kullanıcı Bulunamadı !";
+                                  });
+                                }
                               }
                             }
                           ),
@@ -318,4 +302,22 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  getUserType() async {
+    int ret = -1;
+    var val1 = await _fireStore.collection('students').getDocuments();
+    for(int i=0 ; i<val1.documents.length ; ++i){
+      if(email == val1.documents[i].data['mail']){
+        ret = 1; // found a student
+        return ret;
+      }
+    }
+    var val2 = await _fireStore.collection('profs').getDocuments();
+    for(int i=0 ; i<val2.documents.length ; ++i){
+      if(email == val2.documents[i].data['mail']){
+        ret = 0; // found a professor
+        return ret;
+      }
+    }
+    return ret; // Not Found
+  }
 }

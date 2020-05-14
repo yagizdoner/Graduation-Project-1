@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:cse465ers/models/student.dart';
 import 'package:cse465ers/models/prof.dart';
 import 'package:cse465ers/services/database.dart';
+import 'package:cse465ers/shared/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 
 class AuthService{
 
@@ -75,10 +79,30 @@ class AuthService{
       //create a new document for the user with the uid
       await DatabaseService(uid:prof.uid).updateProfData(email, name, surname, phoneNumber, univercity);
       return _profFromFirebaseProf(prof);
+      /*
+      await prof.sendEmailVerification();
+      int _start = 180;
+      while(_start > 0){
+        print(_start);
+        await Future.delayed(Duration(seconds: 1));
+        _start = _start - 1;
+        if(prof.isEmailVerified){
+          print("verified");
+          await DatabaseService(uid:prof.uid).updateProfData(email, name, surname, phoneNumber, univercity);
+          return _profFromFirebaseProf(prof);
+        }
+      }
+      prof.delete();
+      return null;
+      */
     } catch(e){
       print(e.toString());
       return null;
     }
+  }
+
+  Future<void> updatePass(String email) async{
+    await _auth.sendPasswordResetEmail(email: email);
   }
 
   // sign out

@@ -5,6 +5,7 @@ import 'package:cse465ers/screens/profScreens/addCourse.dart';
 import 'package:cse465ers/screens/profScreens/courseDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 
 class Cources extends StatefulWidget {
@@ -18,61 +19,82 @@ class Cources extends StatefulWidget {
 
 class _CourcesState extends State<Cources> {
 
-  var courseNames = [];
-  var courseCodes = [];
   final databaseReference = Firestore.instance;
-
+  Future fut;
   bool loading = false;
+   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
-    setState(() {
-      loading = true;
-    });
-    getCourse();
-    setState(() {
-      loading = false;
-    });
+    fut = getCourse();
   }
 
-  Future getCourse() async{
+  getCourse() async{
+    var names = new List(); 
+    var codes = new List(); 
     final _fireStore = Firestore.instance;
-    Future getCourses() async {
-      return await _fireStore.collection('Cources').getDocuments();
-    }
-    getCourses().then((val){
-      for(int i=0 ; i<val.documents.length ; ++i){
-        if((val.documents[i].data['Ders Prof']) == widget.profName){
-          courseNames.add(val.documents[i].data['Ders Adı']);
-          courseCodes.add(val.documents[i].data['Ders Kodu']);
-        }
+    var val = await _fireStore.collection('Cources').getDocuments();
+    for(int i=0 ; i<val.documents.length ; ++i){
+      if((val.documents[i].data['Ders Prof']) == widget.profName){
+        names.add(val.documents[i].data['Ders Adı']);
+        codes.add(val.documents[i].data['Ders Kodu']);
       }
-    }); 
+    }
+    return [names,codes];
   }
 
   @override
   Widget build(BuildContext context) {
-    return loading ? Loading() : Scaffold(
-      backgroundColor: Color(0xFFD9E6EB),
-      body: SingleChildScrollView(
-        child: Column(
-          children:
-            createCourse(courseNames, courseCodes)
+    return Scaffold(
+      body: Container(
+        child: FutureBuilder(
+          future: fut,
+          builder: (BuildContext context,AsyncSnapshot snapshot){
+            if(snapshot.connectionState != ConnectionState.done){
+              return Loading();
+            }
+            if(!snapshot.hasData){
+              return Text("\n\nVeritabanında Bir Hata Var");
+            }
+            final data = snapshot.data;
+            return SmartRefresher(
+                enablePullDown: true,
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                header: BezierCircleHeader(),
+                child: Scaffold(
+                backgroundColor: Color(0xFFD9E6EB),
+                body: SingleChildScrollView(
+                  child: Column(
+                    children:
+                      createCourse(data[0], data[1])
+                  ),
+                ),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AddCouce()),
+                    );
+                  },
+                  child: Icon(Icons.add),
+                  backgroundColor: Color(0xFF033140),
+                ),
+              ),
+            );
+          },
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddCouce()),
-          );
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Color(0xFF033140),
       ),
     );
   }
+
+
+  _onRefresh() async{
+    fut = getCourse();
+    setState(() {});
+  }
+
 
   List<Widget> createCourse(name,code){
     List<Widget> list = new List();
