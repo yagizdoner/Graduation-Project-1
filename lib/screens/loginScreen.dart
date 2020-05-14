@@ -35,6 +35,8 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Color(0xFF033140),
       body: Container(
         child: ListView(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
           children: <Widget>[
             Image(
               image: AssetImage('assets/logIn.png'),

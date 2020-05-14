@@ -1,8 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cse465ers/shared/loading.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Profile extends StatefulWidget {
+
+  final String mail;
+  const Profile(this.mail);
+
   @override
   _ProfileState createState() => _ProfileState();
 }
@@ -16,7 +22,7 @@ class _ProfileState extends State<Profile> {
   bool loading = false;
 
   final _formKey = GlobalKey<FormState>();
-
+  final databaseReference = Firestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -131,11 +137,11 @@ class _ProfileState extends State<Profile> {
                 ),
                 onPressed: ()  {
                   if(_formKey.currentState.validate()){
-                    //setState(() => loading = true);
-                    // DB ye kaydet ve loading false yap
+                    setState(() => loading = true);
+                    updateCourseToDB(univercity, phoneNumber, password);
                     setState(() {
-                      error = 'Profiliniz Güncellenmiştir.';
                       loading = false;
+                      error = 'Profiliniz Güncellenmiştir.';
                     });
                     print("KAYDET E BASILDI");
                   }
@@ -183,5 +189,34 @@ class _ProfileState extends State<Profile> {
         ),
       ),
     );
+  }
+
+  void updateCourseToDB2(String uni, String phone, String pass) async {
+    databaseReference
+      .collection("profs")
+      .getDocuments()
+      .then((QuerySnapshot snapshot) {
+      snapshot.documents.forEach((f) {
+        if(f.data['mail'] == widget.mail){
+          
+        }
+      });
+    });
+  }
+
+  void updateCourseToDB(String uni, String phone, String pass) async{
+    Future<String> getUserDoc() async {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      FirebaseUser user = await _auth.currentUser();
+      return user.uid;
+    }
+    getUserDoc().then((val){
+      if(val!=null){
+        databaseReference.collection('profs')
+                .document(val).updateData({'univercity': uni,
+                                        'phoneNumber': phone,});
+                                        // ŞİFRE UNUTMA !!!
+      }
+    });
   }
 }

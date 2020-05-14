@@ -7,6 +7,11 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class CourseDetail extends StatefulWidget {
+  
+  final String name;
+  final String code;
+  const CourseDetail(this.name, this.code);
+
   @override
   _CourseDetailState createState() => _CourseDetailState();
 }
@@ -16,16 +21,26 @@ class _CourseDetailState extends State<CourseDetail> {
   final AuthService _auth = AuthService();
 
   String courseName = '';
+  String courseCode = '';
   String courseDep = '';
   String profName = '';
   String kontenjan = '';
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      courseName = widget.name;
+      courseCode = widget.code;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return loading ? Loading() : Scaffold(
        appBar: AppBar(
         backgroundColor: Color(0xFF033140),
-        title: Text(" Ders İsmi "),
+        title: Text(courseName),
         actions: <Widget>[
           Row(
             children: <Widget>[
@@ -37,7 +52,7 @@ class _CourseDetailState extends State<CourseDetail> {
                 onPressed: () async {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => UpdateCourse()),
+                    MaterialPageRoute(builder: (context) => UpdateCourse(courseCode)),
                   );
                 }
               ),

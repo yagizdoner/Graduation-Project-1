@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cse465ers/services/auth.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,6 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class UpdateCourse extends StatefulWidget {
+
+  final String code;
+  const UpdateCourse(this.code);
+
   @override
   _UpdateCourseState createState() => _UpdateCourseState();
 }
@@ -14,6 +19,8 @@ class _UpdateCourseState extends State<UpdateCourse> {
   bool loading = false;
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
+  final databaseReference = Firestore.instance;
+
 
   String courseName = '';
   String courseDep = '';
@@ -172,9 +179,12 @@ class _UpdateCourseState extends State<UpdateCourse> {
                 ),
                 onPressed: ()  {
                   if(_formKey.currentState.validate()){
-                    //setState(() => loading = true);
-                    // DB ye kaydet ve loading false yap, sonra ders detay sekmesine geri dön.
-                    print("GÜNCCELLEYE YE BASILDI");
+                    setState(() => loading = true);
+                    updateCourseToDB(courseName, courseCode, courseDep, kontenjan);
+                    setState(() => loading = false);                                  
+                    setState(() {
+                      error = 'Güncellendi';
+                    });
                   }
                   else{
                     setState(() {
@@ -194,5 +204,19 @@ class _UpdateCourseState extends State<UpdateCourse> {
         ),
       ),
     );
+  }
+
+  void updateCourseToDB(String name, String code, String dep, String kont) async {
+    try {
+      databaseReference
+          .collection('Cources')
+          .document(widget.code)
+          .updateData({'Ders Adı': name,
+                       //'Ders Kodu': code,  KODU GÜNCELLEYİM Mİ?
+                       'Bölüm': dep,
+                       'Kontenjan': kont});
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }

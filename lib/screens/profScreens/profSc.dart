@@ -3,7 +3,6 @@ import 'package:cse465ers/screens/profScreens/cources.dart';
 import 'package:cse465ers/screens/profScreens/message.dart';
 import 'package:cse465ers/services/auth.dart';
 import 'package:cse465ers/shared/loading.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:cse465ers/screens/profScreens/profile.dart';
@@ -187,7 +186,7 @@ class _ProfScState extends State<ProfSc> {
       case 1:
         return Message();
       case 2:
-        return Profile();
+        return Profile(widget.user);
       default:
         return Cources(name);
     }

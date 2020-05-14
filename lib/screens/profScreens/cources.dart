@@ -36,7 +36,7 @@ class _CourcesState extends State<Cources> {
     });
   }
 
-  getCourse() async{
+  Future getCourse() async{
     final _fireStore = Firestore.instance;
     Future getCourses() async {
       return await _fireStore.collection('Cources').getDocuments();
@@ -57,7 +57,7 @@ class _CourcesState extends State<Cources> {
       backgroundColor: Color(0xFFD9E6EB),
       body: SingleChildScrollView(
         child: Column(
-          children: 
+          children:
             createCourse(courseNames, courseCodes)
         ),
       ),
@@ -87,7 +87,7 @@ class _CourcesState extends State<Cources> {
     return RaisedButton(
       onPressed: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CourseDetail()),
+            MaterialPageRoute(builder: (context) => CourseDetail(name, id)),
           ),
       padding: const EdgeInsets.all(0.0),
       child: Slidable(
