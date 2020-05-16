@@ -1,24 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cse465ers/screens/studentScreens/addCource.dart';
+import 'package:cse465ers/screens/studentScreens/courseDetail.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:cse465ers/screens/profScreens/addCourse.dart';
-import 'package:cse465ers/screens/profScreens/courseDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-
 class Cources extends StatefulWidget {
-  
-  final String profName;
-  const Cources(this.profName);
-  
+
+  final String studentName;
+  const Cources(this.studentName);
+
   @override
   _CourcesState createState() => _CourcesState();
 }
 
 class _CourcesState extends State<Cources> {
-
+  
   final databaseReference = Firestore.instance;
   Future fut;
   bool loading = false;
@@ -31,17 +30,17 @@ class _CourcesState extends State<Cources> {
   }
 
   getCourse() async{
-    var names = new List(); 
+    /*var names = new List(); 
     var codes = new List(); 
     final _fireStore = Firestore.instance;
     var val = await _fireStore.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
-      if((val.documents[i].data['Ders Prof']) == widget.profName){
+      if((val.documents[i].data['Ders Prof']) == widget.studentName){
         names.add(val.documents[i].data['Ders Adı']);
         codes.add(val.documents[i].data['Ders Kodu']);
       }
     }
-    return [names,codes];
+    return [names,codes];*/
   }
 
   @override
@@ -62,7 +61,7 @@ class _CourcesState extends State<Cources> {
                 header: BezierCircleHeader(),
                 child: Scaffold(
                 backgroundColor: Color(0xFFD9E6EB),
-                body: Text("\n\nVeritabanında Bir Hata Var"),
+                body: Text("\n\n     KAYITLI DERSİNİZ BULUNMAMAKTADIR..."),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
                     Navigator.push(
@@ -108,12 +107,10 @@ class _CourcesState extends State<Cources> {
     );
   }
 
-
   _onRefresh() async{
     fut = getCourse();
     setState(() {});
   }
-
 
   List<Widget> createCourse(name,code){
     List<Widget> list = new List();
@@ -167,4 +164,3 @@ class _CourcesState extends State<Cources> {
     );
   }
 }
-

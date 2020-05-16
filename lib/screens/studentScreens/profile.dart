@@ -5,10 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Profile extends StatefulWidget {
-
+  
   final String mail;
   const Profile(this.mail);
-
+  
   @override
   _ProfileState createState() => _ProfileState();
 }
@@ -16,8 +16,6 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   
   String password = '';
-  String univercity = '';
-  String phoneNumber = '';
   String error = '';
   bool loading = false;
 
@@ -55,42 +53,6 @@ class _ProfileState extends State<Profile> {
                     children: <Widget>[
                       SizedBox(height: MediaQuery.of(context).size.height/45),
                       
-                      Container(
-                        height: MediaQuery.of(context).size.height/18,
-                        child: TextFormField(
-                          decoration: new InputDecoration(
-                            hintText: '   Üniversite',
-                            suffixIcon: Icon(
-                              Icons.done_all,
-                              color: Color(0xFF033140),
-                            ),
-                          ),
-                          cursorColor: Color(0xFF033140),
-                          validator: (val) => val.isEmpty ? 'Lütfen Üniversite Giriniz' : null,
-                          onChanged: (val) {
-                            setState(() => univercity = val);
-                          },
-                        ),
-                      ),
-                      SizedBox(height: MediaQuery.of(context).size.height/70),
-                      Container(
-                        height: MediaQuery.of(context).size.height/18,
-                        child: TextFormField(
-                          decoration: new InputDecoration(
-                            hintText: '   Telefon',
-                            suffixIcon: Icon(
-                              Icons.phone,
-                              color: Color(0xFF033140),
-                            ),
-                          ),
-                          cursorColor: Color(0xFF033140),
-                          validator: (val) => val.isEmpty ? 'Lütfen Telefon Giriniz' : null,
-                          onChanged: (val) {
-                            setState(() => phoneNumber = val);
-                          },
-                        ),
-                      ),
-                      SizedBox(height: MediaQuery.of(context).size.height/70),
                       Container(
                         height: MediaQuery.of(context).size.height/18,
                         child: TextFormField(
@@ -138,7 +100,7 @@ class _ProfileState extends State<Profile> {
                 onPressed: ()  {
                   if(_formKey.currentState.validate()){
                     setState(() => loading = true);
-                    updateCourseToDB(univercity, phoneNumber, password);
+                    updateCourseToDB(password);
                     setState(() {
                       loading = false;
                       error = 'Profiliniz Güncellenmiştir.';
@@ -190,19 +152,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  void updateCourseToDB(String uni, String phone, String pass) async{
-    Future<String> getUserDoc() async {
-      final FirebaseAuth _auth = FirebaseAuth.instance;
-      FirebaseUser user = await _auth.currentUser();
-      return user.uid;
-    }
-    getUserDoc().then((val){
-      if(val!=null){
-        databaseReference.collection('profs')
-                .document(val).updateData({'univercity': uni,
-                                        'phoneNumber': phone,});
-                                        // ŞİFRE UNUTMA !!!
-      }
-    });
+  void updateCourseToDB(String pass) async{
+    // Şifre yi Güncelle ;;;;
   }
 }

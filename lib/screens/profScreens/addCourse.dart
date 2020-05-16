@@ -6,12 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class AddCouce extends StatefulWidget {
+class AddCource extends StatefulWidget {
   @override
-  _AddCouceState createState() => _AddCouceState();
+  _AddCourceState createState() => _AddCourceState();
 }
 
-class _AddCouceState extends State<AddCouce> {
+class _AddCourceState extends State<AddCource> {
 
   bool loading = false;
   final AuthService _auth = AuthService();
