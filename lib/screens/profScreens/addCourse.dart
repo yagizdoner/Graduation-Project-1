@@ -66,21 +66,6 @@ class _AddCourceState extends State<AddCource> {
     return loading ? Loading() : Scaffold(
        appBar: AppBar(
         backgroundColor: Color(0xFF033140),
-        actions: <Widget>[
-          Row(
-            children: <Widget>[
-              IconButton(
-                icon : Icon(
-                  MdiIcons.logout,
-                  color: Colors.white,
-                ),
-                onPressed: () async {
-                  await _auth.signOut();
-                }
-              ),
-            ],
-          )
-        ],
       ),
 
       backgroundColor: Color(0xFFD9E6EB),
@@ -239,7 +224,7 @@ class _AddCourceState extends State<AddCource> {
  
   void addCourseToDB(String name, String code, String dep, String kont, String prof ) async {
     await databaseReference.collection("Cources")
-        .document(code)
+        .document()
         .setData({
           'Ders Adı': name,
           'Ders Kodu': code,

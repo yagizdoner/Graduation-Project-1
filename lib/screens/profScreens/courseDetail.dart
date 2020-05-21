@@ -44,26 +44,32 @@ class _CourseDetailState extends State<CourseDetail> {
         actions: <Widget>[
           Row(
             children: <Widget>[
-              IconButton(
-                icon : Icon(
-                  MdiIcons.update,
-                  color: Colors.white,
+               RaisedButton(
+                color: Color(0xFF033140),
+                child: Container(
+                  width: MediaQuery.of(context).size.width/4,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        MdiIcons.update,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width:MediaQuery.of(context).size.height/40),
+                      Text(
+                        'Dersi\nGüncelle',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 onPressed: () async {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => UpdateCourse(courseCode)),
+                    MaterialPageRoute(builder: (context) => UpdateCourse(courseCode, courseName)),
                   );
-                }
-              ),
-              SizedBox(width: MediaQuery.of(context).size.width/30,),
-              IconButton(
-                icon : Icon(
-                  MdiIcons.logout,
-                  color: Colors.white,
-                ),
-                onPressed: () async {
-                  await _auth.signOut();
                 }
               ),
             ],

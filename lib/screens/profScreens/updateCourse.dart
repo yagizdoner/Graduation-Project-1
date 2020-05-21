@@ -8,13 +8,22 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 class UpdateCourse extends StatefulWidget {
 
   final String code;
-  const UpdateCourse(this.code);
+  final String name;
+  const UpdateCourse(this.code, this.name);
 
   @override
   _UpdateCourseState createState() => _UpdateCourseState();
 }
 
 class _UpdateCourseState extends State<UpdateCourse> {
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      header = widget.name;
+    });
+  }
 
   bool loading = false;
   final AuthService _auth = AuthService();
@@ -28,28 +37,15 @@ class _UpdateCourseState extends State<UpdateCourse> {
   String courseCode ='';
   String kontenjan = '';
   String error = '';
+  String header = '';
 
   @override
   Widget build(BuildContext context) {
     return loading ? Loading() : Scaffold(
        appBar: AppBar(
         backgroundColor: Color(0xFF033140),
-        title: Text(" Ders İsmi "),
-        actions: <Widget>[
-          Row(
-            children: <Widget>[
-              IconButton(
-                icon : Icon(
-                  MdiIcons.logout,
-                  color: Colors.white,
-                ),
-                onPressed: () async {
-                  await _auth.signOut();
-                }
-              ),
-            ],
-          )
-        ],
+        title: Text(header),
+        
       ),
 
       backgroundColor: Color(0xFFD9E6EB),
@@ -207,16 +203,22 @@ class _UpdateCourseState extends State<UpdateCourse> {
   }
 
   void updateCourseToDB(String name, String code, String dep, String kont) async {
-    try {
-      databaseReference
-          .collection('Cources')
-          .document(widget.code)
-          .updateData({'Ders Adı': name,
-                       // 'Ders Kodu': code,   YAPILMALI MI ???
-                       'Bölüm': dep,
-                       'Kontenjan': kont});
-    } catch (e) {
-      print(e.toString());
+    QuerySnapshot _myDoc = await Firestore.instance.collection('Cources').getDocuments();
+    List<DocumentSnapshot> _myDocCount = _myDoc.documents;
+    for(int i=0; i<_myDocCount.length ;++i){
+      if(_myDocCount[i].data["Ders Kodu"] == widget.code && _myDocCount[i].data["Ders Adı"] == widget.name){
+        try {
+          databaseReference
+              .collection('Cources')
+              .document(_myDocCount[i].documentID)
+              .updateData({'Ders Adı': name,
+                           'Ders Kodu': code,
+                           'Bölüm': dep,
+                           'Kontenjan': kont});
+        } catch (e) {
+          print(e.toString());
+        }
+      }
     }
   }
 }

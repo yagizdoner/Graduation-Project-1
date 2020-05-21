@@ -152,19 +152,33 @@ class _CourcesState extends State<Cources> {
             color: Colors.red,
             icon: Icons.delete,
             onTap: ((){
-              try {
-                databaseReference
-                    .collection('Cources')
-                    .document(id)
-                    .delete();
-              } catch (e) {
-                print(e.toString());
-              }
+              getDocId(name,id).then((String result){
+                try {
+                  databaseReference
+                      .collection('Cources')
+                      .document(result.toString())
+                      .delete();
+                } catch (e) {
+                  print(e.toString());
+                }
+              });
             }) ,
           ),
         ],
       ),
     );
   }
+
+  Future<String> getDocId(String name, String code) async {
+    return await Firestore.instance.collection('Cources').getDocuments().then((var asd){
+        for(int i=0; i<asd.documents.length ;++i){
+          if(asd.documents[i].data["Ders Kodu"] == code && asd.documents[i].data["Ders Adı"] == name){
+            return asd.documents[i].documentID;
+          }
+        }
+      }
+    );
+  }
+
 }
 
