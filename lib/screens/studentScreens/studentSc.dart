@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cse465ers/screens/loginScreen.dart';
 import 'package:cse465ers/screens/studentScreens/cources.dart';
 import 'package:cse465ers/screens/studentScreens/message.dart';
 import 'package:cse465ers/services/auth.dart';
@@ -82,7 +83,12 @@ class _StudentScState extends State<StudentSc> {
                   color: Colors.white,
                 ),
                 onPressed: () async {
-                  await _auth.signOut();
+                  await _auth.signOut().whenComplete((){
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                  );
+                  });
                 }
               ),
             ],

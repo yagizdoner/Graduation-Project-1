@@ -42,9 +42,9 @@ class _AddCourceState extends State<AddCource> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         backgroundColor: Color(0xFF033140),
-        title: Text("Kayıt Olunabilecek Dersler"),
+        title: Text("Açık Dersler"),
         actions: <Widget>[
           Row(
             children: <Widget>[
@@ -102,16 +102,16 @@ class _AddCourceState extends State<AddCource> {
                 controller: _refreshController,
                 onRefresh: _onRefresh,
                 header: BezierCircleHeader(),
-                child: Scaffold(
-                backgroundColor: Color(0xFFD9E6EB),
-                body: SingleChildScrollView(
-                  child: Column(
-                    children:
-                      createCourse(data[0], data[1], data[2])
+                child: Container(
+                  color: Color(0xFFD9E6EB),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children:
+                        createCourse(data[0], data[1], data[2])
+                   ),
                   ),
                 ),
-              ),
-            );
+              );
           },
         ),
       ),

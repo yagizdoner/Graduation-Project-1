@@ -73,32 +73,34 @@ class _CourcesState extends State<Cources> {
                   backgroundColor: Color(0xFF033140),
                 ),
               ),
-            );
+             );
             }
             final data = snapshot.data;
-            return SmartRefresher(
+            return Scaffold(
+              backgroundColor: Color(0xFFD9E6EB),
+              body:SmartRefresher(
                 enablePullDown: true,
                 controller: _refreshController,
                 onRefresh: _onRefresh,
                 header: BezierCircleHeader(),
-                child: Scaffold(
-                backgroundColor: Color(0xFFD9E6EB),
-                body: SingleChildScrollView(
-                  child: Column(
-                    children:
-                      createCourse(data[0], data[1])
+                child: Container(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children:
+                        createCourse(data[0], data[1])
+                    ),
                   ),
                 ),
-                floatingActionButton: FloatingActionButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AddCource()),
-                    );
-                  },
-                  child: Icon(Icons.add),
-                  backgroundColor: Color(0xFF033140),
-                ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddCource()),
+                  );
+                },
+                child: Icon(Icons.add),
+                backgroundColor: Color(0xFF033140),
               ),
             );
           },
