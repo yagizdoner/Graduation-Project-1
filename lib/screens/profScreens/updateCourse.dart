@@ -23,10 +23,16 @@ class _UpdateCourseState extends State<UpdateCourse> {
     setState(() {
       header = widget.name;
     });
+    getCourceDetailFromDB();
+    setState(() {
+      courseDep = dep;
+      courseName = ad;
+      courseCode = kod;
+      kontenjan = kont;
+    });
   }
 
   bool loading = false;
-  final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   final databaseReference = Firestore.instance;
 
@@ -38,6 +44,10 @@ class _UpdateCourseState extends State<UpdateCourse> {
   String kontenjan = '';
   String error = '';
   String header = '';
+  String ad = '';
+  String kod = '';
+  String dep = '';
+  String kont = '';
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +55,7 @@ class _UpdateCourseState extends State<UpdateCourse> {
        appBar: AppBar(
         backgroundColor: Color(0xFF033140),
         title: Text(header),
-        
       ),
-
       backgroundColor: Color(0xFFD9E6EB),
       body: Container(
         color: Color(0xFFD9E6EB),
@@ -80,7 +88,7 @@ class _UpdateCourseState extends State<UpdateCourse> {
                         height: MediaQuery.of(context).size.height/18,
                         child: TextFormField(
                           decoration: new InputDecoration(
-                            hintText: '   Ders Adı',
+                            hintText: ad,
                             suffixIcon: Icon(
                               Icons.done_all,
                               color: Color(0xFF033140),
@@ -98,7 +106,7 @@ class _UpdateCourseState extends State<UpdateCourse> {
                         height: MediaQuery.of(context).size.height/18,
                         child: TextFormField(
                           decoration: new InputDecoration(
-                            hintText: '   Dersin Kodu',
+                            hintText: kod,
                             suffixIcon: Icon(
                               Icons.code,
                               color: Color(0xFF033140),
@@ -116,7 +124,7 @@ class _UpdateCourseState extends State<UpdateCourse> {
                         height: MediaQuery.of(context).size.height/18,
                         child: TextFormField(
                           decoration: new InputDecoration(
-                            hintText: '   Bölüm',
+                            hintText: dep,
                             suffixIcon: Icon(
                               Icons.info_outline,
                               color: Color(0xFF033140),
@@ -134,7 +142,7 @@ class _UpdateCourseState extends State<UpdateCourse> {
                         height: MediaQuery.of(context).size.height/18,
                         child: TextFormField(
                           decoration: new InputDecoration(
-                            hintText: '   Kontenjan',
+                            hintText: kont,
                             suffixIcon: Icon(
                               Icons.info_outline,
                               color: Color(0xFF033140),
@@ -218,6 +226,24 @@ class _UpdateCourseState extends State<UpdateCourse> {
         } catch (e) {
           print(e.toString());
         }
+      }
+    }
+  }
+
+  void getCourceDetailFromDB() async {
+    QuerySnapshot _myDoc = await Firestore.instance.collection('Cources').getDocuments();
+    List<DocumentSnapshot> _myDocCount = _myDoc.documents;
+    for(int i=0; i<_myDocCount.length ;++i){
+      if(_myDocCount[i].data["Ders Kodu"] == widget.code && _myDocCount[i].data["Ders Adı"] == widget.name){
+        DocumentReference document = databaseReference.collection('Cources').document(_myDocCount[i].documentID);
+        await document.get().then<dynamic>(( DocumentSnapshot snapshot) async{
+          setState(() {
+            ad=snapshot.data["Ders Adı"];
+            kod=snapshot.data["Ders Kodu"];
+            dep=snapshot.data["Bölüm"];
+            kont=snapshot.data["Kontenjan"];
+          });
+        });
       }
     }
   }

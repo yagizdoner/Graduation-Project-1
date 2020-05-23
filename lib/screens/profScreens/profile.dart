@@ -17,12 +17,20 @@ class _ProfileState extends State<Profile> {
   
   String password = '';
   String univercity = '';
+  String uni = '';
+  String tel = '';
   String phoneNumber = '';
   String error = '';
   bool loading = false;
 
   final _formKey = GlobalKey<FormState>();
   final databaseReference = Firestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    getUserDetailFromDB();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,12 +62,11 @@ class _ProfileState extends State<Profile> {
                   child: Column(
                     children: <Widget>[
                       SizedBox(height: MediaQuery.of(context).size.height/45),
-                      
                       Container(
                         height: MediaQuery.of(context).size.height/18,
                         child: TextFormField(
                           decoration: new InputDecoration(
-                            hintText: '   Üniversite',
+                            hintText: uni,
                             suffixIcon: Icon(
                               Icons.done_all,
                               color: Color(0xFF033140),
@@ -77,7 +84,7 @@ class _ProfileState extends State<Profile> {
                         height: MediaQuery.of(context).size.height/18,
                         child: TextFormField(
                           decoration: new InputDecoration(
-                            hintText: '   Telefon',
+                            hintText: tel,
                             suffixIcon: Icon(
                               Icons.phone,
                               color: Color(0xFF033140),
@@ -87,25 +94,6 @@ class _ProfileState extends State<Profile> {
                           validator: (val) => val.isEmpty ? 'Lütfen Telefon Giriniz' : null,
                           onChanged: (val) {
                             setState(() => phoneNumber = val);
-                          },
-                        ),
-                      ),
-                      SizedBox(height: MediaQuery.of(context).size.height/70),
-                      Container(
-                        height: MediaQuery.of(context).size.height/18,
-                        child: TextFormField(
-                          decoration: new InputDecoration(
-                            hintText: '   Şifre',
-                            suffixIcon: Icon(
-                              Icons.info_outline,
-                              color: Color(0xFF033140),
-                            ),
-                          ),
-                          obscureText: true,
-                          cursorColor: Color(0xFF033140),
-                          validator: (val) => val.length < 6 ? 'Şifre En Az 6 Karakter Olmalı' : null,
-                          onChanged: (val) {
-                            setState(() => password = val);
                           },
                         ),
                       ),
@@ -202,6 +190,25 @@ class _ProfileState extends State<Profile> {
                 .document(val).updateData({'univercity': uni,
                                         'phoneNumber': phone,});
                                         // ŞİFRE UNUTMA !!!
+      }
+    });
+  }
+
+  void getUserDetailFromDB() async{
+    Future<String> getUserDoc() async {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      FirebaseUser user = await _auth.currentUser();
+      return user.uid;
+    }
+    getUserDoc().then((val) async{
+      if(val!=null){
+        DocumentReference document = databaseReference.collection('profs').document(val);
+        await document.get().then<dynamic>(( DocumentSnapshot snapshot) async{
+          setState(() {
+            uni=snapshot.data["univercity"];
+            tel=snapshot.data["phoneNumber"];
+          });
+        });
       }
     });
   }

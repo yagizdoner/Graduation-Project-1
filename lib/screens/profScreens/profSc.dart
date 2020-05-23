@@ -21,12 +21,12 @@ class _ProfScState extends State<ProfSc> {
    
   // text field state
   String password = '';
-  String univercity = '';
   String phoneNumber = '';
   String error = '';
   String userMail = '';
   String userName = '';
   String userSurname = '';
+  String uni = '';
 
   int bodyNum = 0; // Default -> Derslerim Ekranı
   final AuthService _auth = AuthService();
@@ -57,6 +57,7 @@ class _ProfScState extends State<ProfSc> {
             if(widget.user == val.documents[i].data['mail']){
               userName = val.documents[i].data['name'];
               userSurname = val.documents[i].data['surname'];
+              uni = val.documents[i].data['univercity'];
               break;
             }
           }
@@ -94,7 +95,7 @@ class _ProfScState extends State<ProfSc> {
         ],
       ),
 
-      body: bodyScreen(bodyNum, userName+' '+userSurname),
+      body: bodyScreen(bodyNum, userName+' '+userSurname, uni),
 
       bottomNavigationBar: BottomAppBar(
         child: Container(
@@ -185,16 +186,16 @@ class _ProfScState extends State<ProfSc> {
     );
   }
 
-  Widget bodyScreen (bodyNum, name){
+  Widget bodyScreen (bodyNum, name, uni){
     switch (bodyNum) {
       case 0:
-        return Cources(name);
+        return Cources(name, uni);
       case 1:
         return Message();
       case 2:
         return Profile(widget.user);
       default:
-        return Cources(name);
+        return Cources(name, uni);
     }
   }
 }

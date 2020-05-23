@@ -17,10 +17,20 @@ class _ProfileState extends State<Profile> {
   
   String password = '';
   String error = '';
+  String uni = '';
+  String univercity = '';
+  String stuNumber = '';
+  String number = '';
   bool loading = false;
 
   final _formKey = GlobalKey<FormState>();
   final databaseReference = Firestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    getStudentDetailFromDB();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,22 +62,38 @@ class _ProfileState extends State<Profile> {
                   child: Column(
                     children: <Widget>[
                       SizedBox(height: MediaQuery.of(context).size.height/45),
-                      
                       Container(
                         height: MediaQuery.of(context).size.height/18,
                         child: TextFormField(
                           decoration: new InputDecoration(
-                            hintText: '   Şifre',
+                            hintText: uni,
                             suffixIcon: Icon(
-                              Icons.info_outline,
+                              Icons.done_all,
                               color: Color(0xFF033140),
                             ),
                           ),
-                          obscureText: true,
                           cursorColor: Color(0xFF033140),
-                          validator: (val) => val.length < 6 ? 'Şifre En Az 6 Karakter Olmalı' : null,
+                          validator: (val) => val.isEmpty ? 'Lütfen Üniversite Giriniz' : null,
                           onChanged: (val) {
-                            setState(() => password = val);
+                            setState(() => univercity = val);
+                          },
+                        ),
+                      ),
+                      SizedBox(height: MediaQuery.of(context).size.height/70),
+                      Container(
+                        height: MediaQuery.of(context).size.height/18,
+                        child: TextFormField(
+                          decoration: new InputDecoration(
+                            hintText: number,
+                            suffixIcon: Icon(
+                              Icons.phone,
+                              color: Color(0xFF033140),
+                            ),
+                          ),
+                          cursorColor: Color(0xFF033140),
+                          validator: (val) => val.isEmpty ? 'Lütfen Telefon Giriniz' : null,
+                          onChanged: (val) {
+                            setState(() => stuNumber = val);
                           },
                         ),
                       ),
@@ -100,7 +126,7 @@ class _ProfileState extends State<Profile> {
                 onPressed: ()  {
                   if(_formKey.currentState.validate()){
                     setState(() => loading = true);
-                    updateCourseToDB(password);
+                    updateCourseToDB(univercity, stuNumber);
                     setState(() {
                       loading = false;
                       error = 'Profiliniz Güncellenmiştir.';
@@ -152,7 +178,37 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  void updateCourseToDB(String pass) async{
-    // Şifre yi Güncelle ;;;;
+  void updateCourseToDB(String u, String n) async{
+    Future<String> getUserDoc() async {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      FirebaseUser user = await _auth.currentUser();
+      return user.uid;
+    }
+    getUserDoc().then((val){
+      if(val!=null){
+        databaseReference.collection('students')
+                .document(val).updateData({'univercity': u,
+                                        'studentNumber': n,});
+      }
+    });
+  }
+
+  void getStudentDetailFromDB() async{
+    Future<String> getUserDoc() async {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      FirebaseUser user = await _auth.currentUser();
+      return user.uid;
+    }
+    getUserDoc().then((val) async{
+      if(val!=null){
+        DocumentReference document = databaseReference.collection('students').document(val);
+        await document.get().then<dynamic>(( DocumentSnapshot snapshot) async{
+          setState(() {
+            uni=snapshot.data["univercity"];
+            number=snapshot.data["studentNumber"];
+          });
+        });
+      }
+    });
   }
 }

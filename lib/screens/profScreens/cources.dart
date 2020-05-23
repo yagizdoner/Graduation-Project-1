@@ -11,7 +11,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 class Cources extends StatefulWidget {
   
   final String profName;
-  const Cources(this.profName);
+  final String uni;
+  const Cources(this.profName, this.uni);
   
   @override
   _CourcesState createState() => _CourcesState();
@@ -32,7 +33,7 @@ class _CourcesState extends State<Cources> {
 
   getCourse() async{
     var names = new List(); 
-    var codes = new List(); 
+    var codes = new List();
     final _fireStore = Firestore.instance;
     var val = await _fireStore.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
@@ -67,7 +68,7 @@ class _CourcesState extends State<Cources> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AddCource()),
+                      MaterialPageRoute(builder: (context) => AddCource(widget.profName, widget.uni)),
                     );
                   },
                   child: Icon(Icons.add),
@@ -97,7 +98,7 @@ class _CourcesState extends State<Cources> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AddCource()),
+                    MaterialPageRoute(builder: (context) => AddCource(widget.profName, widget.uni)),
                   );
                 },
                 child: Icon(Icons.add),

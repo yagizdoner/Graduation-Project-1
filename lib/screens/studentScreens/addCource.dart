@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cse465ers/screens/profScreens/addCourse.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class AddCource extends StatefulWidget {
+  final String uni;
+  const AddCource(this.uni);
   @override
   _AddCourceState createState() => _AddCourceState();
 }
@@ -28,14 +31,18 @@ class _AddCourceState extends State<AddCource> {
     var names = new List(); 
     var codes = new List(); 
     var profs = new List();
+    var konts = new List();
     final _fireStore = Firestore.instance;
     var val = await _fireStore.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
-      names.add(val.documents[i].data['Ders Adı']);
-      codes.add(val.documents[i].data['Ders Kodu']);
-      profs.add(val.documents[i].data["Ders Prof"]);
+      if(val.documents[i].data['Üniversite'] == widget.uni){
+        names.add(val.documents[i].data['Ders Adı']);
+        codes.add(val.documents[i].data['Ders Kodu']);
+        profs.add(val.documents[i].data["Ders Prof"]);
+        konts.add(val.documents[i].data["Kontenjan"]);
+      }
     }
-    return [names,codes,profs];
+    return [names,codes,profs,konts];
   }
 
   @override
@@ -97,21 +104,24 @@ class _AddCourceState extends State<AddCource> {
             );
             }
             final data = snapshot.data;
-            return SmartRefresher(
-                enablePullDown: true,
-                controller: _refreshController,
-                onRefresh: _onRefresh,
-                header: BezierCircleHeader(),
-                child: Container(
-                  color: Color(0xFFD9E6EB),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children:
-                        createCourse(data[0], data[1], data[2])
-                   ),
+            return Scaffold(
+              backgroundColor: Color(0xFFD9E6EB),
+              body: SmartRefresher(
+                  enablePullDown: true,
+                  controller: _refreshController,
+                  onRefresh: _onRefresh,
+                  header: BezierCircleHeader(),
+                  child: Container(
+                    color: Color(0xFFD9E6EB),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children:
+                          createCourse(data[0], data[1], data[2], data[3])
+                     ),
+                    ),
                   ),
                 ),
-              );
+            );
           },
         ),
       ),
@@ -123,16 +133,16 @@ class _AddCourceState extends State<AddCource> {
     setState(() {});
   }
 
-  List<Widget> createCourse(name,code,prof){
+  List<Widget> createCourse(name,code,prof, kont){
     List<Widget> list = new List();
     for(int i=0; i<name.length ;++i){
-      list.add(createCourseRow(name[i], code[i], prof[i]));
+      list.add(createCourseRow(name[i], code[i], prof[i], kont[i]));
       list.add(SizedBox(height:10,));
     }
     return list;
   }
 
-  Slidable createCourseRow(String name, String id, String prof){
+  Slidable createCourseRow(String name, String id, String prof, String kont){
     return Slidable(
         actionPane: SlidableStrechActionPane(),
         actionExtentRatio: 0.25,
@@ -144,7 +154,7 @@ class _AddCourceState extends State<AddCource> {
               child: Text(id),
               foregroundColor: Colors.white,
             ),
-            title: Text(name),
+            title: Text(name + "      (Kalan Kontenjan : " + kont + ")"),
             subtitle: Text(prof),
           ),
         ),

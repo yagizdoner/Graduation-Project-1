@@ -10,7 +10,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 class Cources extends StatefulWidget {
 
   final String studentName;
-  const Cources(this.studentName);
+  final String uni;
+  const Cources(this.studentName, this.uni);
 
   @override
   _CourcesState createState() => _CourcesState();
@@ -66,7 +67,7 @@ class _CourcesState extends State<Cources> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AddCource()),
+                      MaterialPageRoute(builder: (context) => AddCource(widget.uni)),
                     );
                   },
                   child: Icon(Icons.add),
@@ -96,7 +97,7 @@ class _CourcesState extends State<Cources> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AddCource()),
+                    MaterialPageRoute(builder: (context) => AddCource(widget.uni)),
                   );
                 },
                 child: Icon(Icons.add),

@@ -57,8 +57,8 @@ class _StudentScState extends State<StudentSc> {
             if(widget.user == val.documents[i].data['mail']){
               userName = val.documents[i].data['name'];
               userSurname = val.documents[i].data['surname'];
-              studentNumber = val.document[i].data["studentNumber"];
-              univercity = val.document[i].data["univercity"];
+              studentNumber = val.documents[i].data["studentNumber"];
+              univercity = val.documents[i].data["univercity"];
               break;
             }
           }
@@ -96,7 +96,7 @@ class _StudentScState extends State<StudentSc> {
         ],
       ),
 
-      body: bodyScreen(bodyNum, userName+' '+userSurname),
+      body: bodyScreen(bodyNum, userName+' '+userSurname, univercity),
 
       bottomNavigationBar: BottomAppBar(
         child: Container(
@@ -187,16 +187,16 @@ class _StudentScState extends State<StudentSc> {
     );
   }
 
-  Widget bodyScreen (bodyNum, name){
+  Widget bodyScreen (bodyNum, name, un){
     switch (bodyNum) {
       case 0:
-        return Cources(name);
+        return Cources(name, un);
       case 1:
         return Message();
       case 2:
         return Profile(widget.user);
       default:
-        return Cources(name);
+        return Cources(name, un);
     }
   }
 }

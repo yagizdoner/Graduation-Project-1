@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cse465ers/services/auth.dart';
 import 'package:cse465ers/shared/loading.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class AddCource extends StatefulWidget {
+  final String profName;
+  final String uni;
+  const AddCource(this.profName, this.uni);
+
   @override
   _AddCourceState createState() => _AddCourceState();
 }
@@ -14,52 +15,14 @@ class AddCource extends StatefulWidget {
 class _AddCourceState extends State<AddCource> {
 
   bool loading = false;
-  final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   final databaseReference = Firestore.instance;
 
   String courseName = '';
   String courseDep = '';
-  String profName = ''; // veriden çek
   String courseCode ='';
   String kontenjan = '';
   String error = '';
-  String userMail = '';
-  String userName = '';
-  String userSurname = '';
-
-  @override
-  void initState() {
-    super.initState();
-    getUser();
-    getUserInfo();
-  }
-
-  getUser() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    setState(() {
-      userMail = user.email;
-    });
-  }
-
-  getUserInfo() async{
-    setState((){
-      final _fireStore = Firestore.instance;
-      Future getProf() async {
-        return await _fireStore.collection('profs').getDocuments();
-      }
-      getProf().then((val){
-        for(int i=0 ; i<val.documents.length ; ++i){
-          if(userMail == val.documents[i].data['mail']){
-            userName = val.documents[i].data['name'];
-            userSurname = val.documents[i].data['surname'];
-            profName = userName + ' ' + userSurname;
-            break;
-          }
-        }
-      });
-    });   
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +159,7 @@ class _AddCourceState extends State<AddCource> {
                 onPressed: ()  {
                   if(_formKey.currentState.validate()){
                     setState(() => loading = true);
-                    addCourseToDB(courseName, courseCode, courseDep, kontenjan, profName);
+                    addCourseToDB(courseName, courseCode, courseDep, kontenjan, widget.profName, widget.uni);
                     setState(() => loading = false);                                  
                     setState(() {
                       error = 'Ders Eklendi';
@@ -222,7 +185,7 @@ class _AddCourceState extends State<AddCource> {
     );
   }
  
-  void addCourseToDB(String name, String code, String dep, String kont, String prof ) async {
+  void addCourseToDB(String name, String code, String dep, String kont, String prof, String uni ) async {
     await databaseReference.collection("Cources")
         .document()
         .setData({
@@ -231,6 +194,7 @@ class _AddCourceState extends State<AddCource> {
           'Ders Prof': prof,
           'Bölüm': dep,
           'Kontenjan': kont,
+          'Üniversite': uni,
     });
   }
 }
