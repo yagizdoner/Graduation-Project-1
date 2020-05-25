@@ -34,15 +34,17 @@ class _CourcesState extends State<Cources> {
   getCourse() async{
     var names = new List(); 
     var codes = new List();
+    var unis = new List();
     final _fireStore = Firestore.instance;
     var val = await _fireStore.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
       if((val.documents[i].data['Ders Prof']) == widget.profName){
         names.add(val.documents[i].data['Ders Adı']);
         codes.add(val.documents[i].data['Ders Kodu']);
+        unis.add(val.documents[i].data['Üniversite']);
       }
     }
-    return [names,codes];
+    return [names,codes,unis];
   }
 
   @override
@@ -89,7 +91,7 @@ class _CourcesState extends State<Cources> {
                   child: SingleChildScrollView(
                     child: Column(
                       children:
-                        createCourse(data[0], data[1])
+                        createCourse(data[0], data[1], data[2])
                     ),
                   ),
                 ),
@@ -111,27 +113,25 @@ class _CourcesState extends State<Cources> {
     );
   }
 
-
   _onRefresh() async{
     fut = getCourse();
     setState(() {});
   }
 
-
-  List<Widget> createCourse(name,code){
+  List<Widget> createCourse(name,code,uni){
     List<Widget> list = new List();
     for(int i=0; i<name.length ;++i){
-      list.add(createCourseRow(name[i], code[i]));
+      list.add(createCourseRow(name[i], code[i], uni[i]));
       list.add(SizedBox(height:10,));
     }
     return list;
   }
 
-  RaisedButton createCourseRow(String name, String id){
+  RaisedButton createCourseRow(String name, String id, String uni){
     return RaisedButton(
       onPressed: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CourseDetail(name, id)),
+            MaterialPageRoute(builder: (context) => CourseDetail(name, id, uni)),
           ),
       padding: const EdgeInsets.all(0.0),
       child: Slidable(
@@ -182,6 +182,5 @@ class _CourcesState extends State<Cources> {
       }
     );
   }
-
 }
 

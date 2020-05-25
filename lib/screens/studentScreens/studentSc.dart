@@ -96,7 +96,7 @@ class _StudentScState extends State<StudentSc> {
         ],
       ),
 
-      body: bodyScreen(bodyNum, userName+' '+userSurname, univercity),
+      body: bodyScreen(bodyNum, userName+' '+userSurname, studentNumber, univercity),
 
       bottomNavigationBar: BottomAppBar(
         child: Container(
@@ -187,16 +187,16 @@ class _StudentScState extends State<StudentSc> {
     );
   }
 
-  Widget bodyScreen (bodyNum, name, un){
+  Widget bodyScreen (bodyNum, name, nu, un){
     switch (bodyNum) {
       case 0:
-        return Cources(name, un);
+        return Cources(name, nu, un);
       case 1:
         return Message();
       case 2:
         return Profile(widget.user);
       default:
-        return Cources(name, un);
+        return Cources(name, nu, un);
     }
   }
 }

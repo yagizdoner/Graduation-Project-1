@@ -1,25 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cse465ers/screens/studentScreens/addCource.dart';
-import 'package:cse465ers/screens/studentScreens/courseDetail.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class Cources extends StatefulWidget {
-
-  final String studentName;
-  final String stuNum;
+class Wishes extends StatefulWidget {
+  final String name;
+  final String code;
   final String uni;
-  const Cources(this.studentName, this.stuNum, this.uni);
+  Wishes(this.name,this.code, this.uni);
 
   @override
-  _CourcesState createState() => _CourcesState();
+  _WishesState createState() => _WishesState();
 }
 
-class _CourcesState extends State<Cources> {
-  
+class _WishesState extends State<Wishes> {
+
   final databaseReference = Firestore.instance;
   Future fut;
   bool loading = false;
@@ -28,26 +25,33 @@ class _CourcesState extends State<Cources> {
   @override
   void initState(){
     super.initState();
-    fut = getCourse();
+    fut = getStudent();
   }
 
-  getCourse() async{
-    /*var names = new List(); 
-    var codes = new List(); 
-    final _fireStore = Firestore.instance;
-    var val = await _fireStore.collection('Cources').getDocuments();
+  getStudent() async{
+    var nums = new List(); 
+    var val = await databaseReference.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
-      if((val.documents[i].data['Ders Prof']) == widget.studentName){
-        names.add(val.documents[i].data['Ders Adı']);
-        codes.add(val.documents[i].data['Ders Kodu']);
+      if(val.documents[i].data['Ders Adı'] == widget.name && 
+         val.documents[i].data['Üniversite'] == widget.uni &&
+         val.documents[i].data['İstekler'].length > 0){
+        for(int j=0; j<val.documents[i].data['İstekler'].length ; ++j){
+          nums.add(val.documents[i].data['İstekler'][j]);
+        }
       }
     }
-    return [names,codes];*/
+    // nums da öğrenci numarası var ve widget.uni dede üniversite var.
+    // DB den öğrenci adlarını çek ve ekrana öyle yazdırı ver gari :D
+    return nums;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xFF033140),
+        title: Text("Kayıt İstekleri"),
+      ),
       body: Container(
         child: FutureBuilder(
           future: fut,
@@ -63,24 +67,14 @@ class _CourcesState extends State<Cources> {
                 header: BezierCircleHeader(),
                 child: Scaffold(
                 backgroundColor: Color(0xFFD9E6EB),
-                body: Text("\n\n     KAYITLI DERSİNİZ BULUNMAMAKTADIR..."),
-                floatingActionButton: FloatingActionButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AddCource(widget.uni, widget.stuNum)),
-                    );
-                  },
-                  child: Icon(Icons.add),
-                  backgroundColor: Color(0xFF033140),
+                body: Text("\n\nKayıt İsteği Yok."),
                 ),
-              ),
-             );
+              );
             }
             final data = snapshot.data;
             return Scaffold(
               backgroundColor: Color(0xFFD9E6EB),
-              body:SmartRefresher(
+              body: SmartRefresher(
                 enablePullDown: true,
                 controller: _refreshController,
                 onRefresh: _onRefresh,
@@ -89,20 +83,10 @@ class _CourcesState extends State<Cources> {
                   child: SingleChildScrollView(
                     child: Column(
                       children:
-                        createCourse(data[0], data[1])
+                        studentRow(data)
                     ),
                   ),
                 ),
-              ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AddCource(widget.uni, widget.stuNum)),
-                  );
-                },
-                child: Icon(Icons.add),
-                backgroundColor: Color(0xFF033140),
               ),
             );
           },
@@ -112,27 +96,21 @@ class _CourcesState extends State<Cources> {
   }
 
   _onRefresh() async{
-    fut = getCourse();
+    fut = getStudent();
     setState(() {});
   }
 
-  List<Widget> createCourse(name,code){
+  List<Widget> studentRow(code){
     List<Widget> list = new List();
-    for(int i=0; i<name.length ;++i){
-      list.add(createCourseRow(name[i], code[i]));
+    for(int i=0; i<code.length ;++i){
+      list.add(createStudentRow(code[i]));
       list.add(SizedBox(height:10,));
     }
     return list;
   }
 
-  RaisedButton createCourseRow(String name, String id){
-    return RaisedButton(
-      onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CourseDetail(name, id)),
-          ),
-      padding: const EdgeInsets.all(0.0),
-      child: Slidable(
+  Slidable createStudentRow(String id){
+    return Slidable(
         actionPane: SlidableStrechActionPane(),
         actionExtentRatio: 0.25,
         child: Container(
@@ -143,28 +121,36 @@ class _CourcesState extends State<Cources> {
               child: Text(id),
               foregroundColor: Colors.white,
             ),
-            title: Text(name),
+            title: Text(id),
             //subtitle: Text(prof),
           ),
         ),
         secondaryActions: <Widget>[
           IconSlideAction(
-            caption: 'Çık',
+            caption: 'İptal',
             color: Colors.red,
-            icon: Icons.delete,
+            icon: Icons.delete_forever,
             onTap: ((){
-              try {
-                databaseReference
-                    .collection('Cources')
-                    .document(id)
-                    .delete();
-              } catch (e) {
-                print(e.toString());
-              }
+              dersRet();
+            }) ,
+          ),
+          IconSlideAction(
+            caption: 'Kabul',
+            color: Colors.green,
+            icon: Icons.done_outline,
+            onTap: ((){
+              dersKabul();
             }) ,
           ),
         ],
-      ),
     );
+  }
+
+  void dersRet() async{
+    
+  }
+
+  void dersKabul() async{
+    
   }
 }

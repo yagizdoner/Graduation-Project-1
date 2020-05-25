@@ -1,5 +1,5 @@
 import 'package:cse465ers/screens/profScreens/updateCourse.dart';
-import 'package:cse465ers/services/auth.dart';
+import 'package:cse465ers/screens/profScreens/wishes.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,8 @@ class CourseDetail extends StatefulWidget {
   
   final String name;
   final String code;
-  const CourseDetail(this.name, this.code);
+  final String uni;
+  const CourseDetail(this.name, this.code, this.uni);
 
   @override
   _CourseDetailState createState() => _CourseDetailState();
@@ -18,12 +19,12 @@ class CourseDetail extends StatefulWidget {
 
 class _CourseDetailState extends State<CourseDetail> {
   bool loading = false;
-  final AuthService _auth = AuthService();
 
   String courseName = '';
   String courseCode = '';
   String courseDep = '';
   String profName = '';
+  String courseUni = '';
   String kontenjan = '';
 
   @override
@@ -32,6 +33,7 @@ class _CourseDetailState extends State<CourseDetail> {
     setState(() {
       courseName = widget.name;
       courseCode = widget.code;
+      courseUni = widget.uni;
     });
   }
 
@@ -150,7 +152,10 @@ class _CourseDetailState extends State<CourseDetail> {
                   ),
                 ),
                 onPressed: () async {
-                  print("İsteklere Basıldı.");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Wishes(courseName,courseCode, courseUni)),
+                  );
                 }
               ),
             ],

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cse465ers/screens/profScreens/addCourse.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class AddCource extends StatefulWidget {
   final String uni;
-  const AddCource(this.uni);
+  final String stuNum;
+  const AddCource(this.uni, this.stuNum);
   @override
   _AddCourceState createState() => _AddCourceState();
 }
@@ -32,17 +32,19 @@ class _AddCourceState extends State<AddCource> {
     var codes = new List(); 
     var profs = new List();
     var konts = new List();
+    var colle = new List();
     final _fireStore = Firestore.instance;
     var val = await _fireStore.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
       if(val.documents[i].data['Üniversite'] == widget.uni){
+        colle.add(val.documents[i].documentID);
         names.add(val.documents[i].data['Ders Adı']);
         codes.add(val.documents[i].data['Ders Kodu']);
         profs.add(val.documents[i].data["Ders Prof"]);
         konts.add(val.documents[i].data["Kontenjan"]);
       }
     }
-    return [names,codes,profs,konts];
+    return [names,codes,profs,konts,colle];
   }
 
   @override
@@ -116,7 +118,7 @@ class _AddCourceState extends State<AddCource> {
                     child: SingleChildScrollView(
                       child: Column(
                         children:
-                          createCourse(data[0], data[1], data[2], data[3])
+                          createCourse(data[0], data[1], data[2], data[3], data[4])
                      ),
                     ),
                   ),
@@ -133,16 +135,16 @@ class _AddCourceState extends State<AddCource> {
     setState(() {});
   }
 
-  List<Widget> createCourse(name,code,prof, kont){
+  List<Widget> createCourse(name,code,prof, kont, col){
     List<Widget> list = new List();
     for(int i=0; i<name.length ;++i){
-      list.add(createCourseRow(name[i], code[i], prof[i], kont[i]));
+      list.add(createCourseRow(name[i], code[i], prof[i], kont[i], col[i]));
       list.add(SizedBox(height:10,));
     }
     return list;
   }
 
-  Slidable createCourseRow(String name, String id, String prof, String kont){
+  Slidable createCourseRow(String name, String id, String prof, String kont, String colNum){
     return Slidable(
         actionPane: SlidableStrechActionPane(),
         actionExtentRatio: 0.25,
@@ -164,10 +166,20 @@ class _AddCourceState extends State<AddCource> {
             color: Colors.blue,
             icon: Icons.add,
             onTap: ((){
-              
+              addWish(colNum);
             }) ,
           ),
         ],
     );
+  }
+
+  void addWish(String collectionNumber) async {
+    List<String> arr = new List<String>();
+    arr.add(widget.stuNum);
+    await databaseReference.collection("Cources")
+        .document(collectionNumber)
+        .updateData({
+          'İstekler': FieldValue.arrayUnion(arr),
+    });
   }
 }
