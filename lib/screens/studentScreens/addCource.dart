@@ -33,6 +33,8 @@ class _AddCourceState extends State<AddCource> {
     var profs = new List();
     var konts = new List();
     var colle = new List();
+    var istek = new List();
+    var kayitli = new List();
     final _fireStore = Firestore.instance;
     var val = await _fireStore.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
@@ -42,9 +44,11 @@ class _AddCourceState extends State<AddCource> {
         codes.add(val.documents[i].data['Ders Kodu']);
         profs.add(val.documents[i].data["Ders Prof"]);
         konts.add(val.documents[i].data["Kontenjan"]);
+        istek.add(val.documents[i].data["İstekler"].length);
+        kayitli.add(val.documents[i].data["Kayıtlılar"].length);
       }
     }
-    return [names,codes,profs,konts,colle];
+    return [names,codes,profs,konts,colle,istek,kayitli];
   }
 
   @override
@@ -118,7 +122,7 @@ class _AddCourceState extends State<AddCource> {
                     child: SingleChildScrollView(
                       child: Column(
                         children:
-                          createCourse(data[0], data[1], data[2], data[3], data[4])
+                          createCourse(data[0], data[1], data[2], data[3], data[4], data[5], data[6])
                      ),
                     ),
                   ),
@@ -135,16 +139,17 @@ class _AddCourceState extends State<AddCource> {
     setState(() {});
   }
 
-  List<Widget> createCourse(name,code,prof, kont, col){
+  List<Widget> createCourse(name,code,prof,kont,col,ist,kay){
     List<Widget> list = new List();
     for(int i=0; i<name.length ;++i){
-      list.add(createCourseRow(name[i], code[i], prof[i], kont[i], col[i]));
+      list.add(createCourseRow(name[i], code[i], prof[i], kont[i], col[i], ist[i], kay[i]));
       list.add(SizedBox(height:10,));
     }
     return list;
   }
 
-  Slidable createCourseRow(String name, String id, String prof, String kont, String colNum){
+  Slidable createCourseRow(String name, String id, String prof, String kont, String colNum, int ist, int kay){
+    int kalanKont = int.parse(kont) - (ist+kay);
     return Slidable(
         actionPane: SlidableStrechActionPane(),
         actionExtentRatio: 0.25,
@@ -156,7 +161,7 @@ class _AddCourceState extends State<AddCource> {
               child: Text(id),
               foregroundColor: Colors.white,
             ),
-            title: Text(name + "      (Kalan Kontenjan : " + kont + ")"),
+            title: Text(name + "      (Kalan Kontenjan : " + kalanKont.toString() + " \\ "+ kont +")"),
             subtitle: Text(prof),
           ),
         ),
@@ -166,20 +171,25 @@ class _AddCourceState extends State<AddCource> {
             color: Colors.blue,
             icon: Icons.add,
             onTap: ((){
-              addWish(colNum);
+              addWish(colNum,kalanKont);
             }) ,
           ),
         ],
     );
   }
 
-  void addWish(String collectionNumber) async {
-    List<String> arr = new List<String>();
-    arr.add(widget.stuNum);
-    await databaseReference.collection("Cources")
-        .document(collectionNumber)
-        .updateData({
-          'İstekler': FieldValue.arrayUnion(arr),
-    });
+  void addWish(String collectionNumber, int kalan) async {
+    if(kalan > 0){
+      List<String> arr = new List<String>();
+      arr.add(widget.stuNum);
+      await databaseReference.collection("Cources")
+          .document(collectionNumber)
+          .updateData({
+            'İstekler': FieldValue.arrayUnion(arr),
+      });
+    }
+    else{
+      // Buraya Kontenjan yok tarzında hata kutusu çıkarttır.
+    }
   }
 }

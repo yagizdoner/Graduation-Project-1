@@ -29,20 +29,30 @@ class _WishesState extends State<Wishes> {
   }
 
   getStudent() async{
-    var nums = new List(); 
+    var nums = new List();
+    var nm = new List();
+    var surNm = new List();
     var val = await databaseReference.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
       if(val.documents[i].data['Ders Adı'] == widget.name && 
          val.documents[i].data['Üniversite'] == widget.uni &&
+         val.documents[i].data['Ders Kodu'] == widget.code &&
          val.documents[i].data['İstekler'].length > 0){
         for(int j=0; j<val.documents[i].data['İstekler'].length ; ++j){
           nums.add(val.documents[i].data['İstekler'][j]);
         }
       }
     }
-    // nums da öğrenci numarası var ve widget.uni dede üniversite var.
-    // DB den öğrenci adlarını çek ve ekrana öyle yazdırı ver gari :D
-    return nums;
+    val = await databaseReference.collection('students').getDocuments();
+    for(int i=0; i<nums.length; ++i){
+      for(int j=0; j<val.documents.length; ++j){
+        if(val.documents[j].data["univercity"]==widget.uni && val.documents[j].data["studentNumber"]==nums[i]){
+          nm.add(val.documents[j].data["name"]);
+          surNm.add(val.documents[j].data["surname"]);
+        }
+      }
+    }
+    return [nums,nm,surNm];
   }
 
   @override
@@ -83,7 +93,7 @@ class _WishesState extends State<Wishes> {
                   child: SingleChildScrollView(
                     child: Column(
                       children:
-                        studentRow(data)
+                        studentRow(data[0], data[1], data[2])
                     ),
                   ),
                 ),
@@ -100,16 +110,16 @@ class _WishesState extends State<Wishes> {
     setState(() {});
   }
 
-  List<Widget> studentRow(code){
+  List<Widget> studentRow(code, name, surname){
     List<Widget> list = new List();
     for(int i=0; i<code.length ;++i){
-      list.add(createStudentRow(code[i]));
+      list.add(createStudentRow(code[i], name[i], surname[i]));
       list.add(SizedBox(height:10,));
     }
     return list;
   }
 
-  Slidable createStudentRow(String id){
+  Slidable createStudentRow(String id, String na, String su){
     return Slidable(
         actionPane: SlidableStrechActionPane(),
         actionExtentRatio: 0.25,
@@ -118,11 +128,11 @@ class _WishesState extends State<Wishes> {
           child: ListTile(
             leading: CircleAvatar(
               backgroundColor: Colors.indigoAccent,
-              child: Text(id),
+              child: Text(na[0]+su[0]),
               foregroundColor: Colors.white,
             ),
-            title: Text(id),
-            //subtitle: Text(prof),
+            title: Text(na + " " + su),
+            subtitle: Text(id),
           ),
         ),
         secondaryActions: <Widget>[
@@ -131,7 +141,7 @@ class _WishesState extends State<Wishes> {
             color: Colors.red,
             icon: Icons.delete_forever,
             onTap: ((){
-              dersRet();
+              dersRet(id);
             }) ,
           ),
           IconSlideAction(
@@ -139,18 +149,49 @@ class _WishesState extends State<Wishes> {
             color: Colors.green,
             icon: Icons.done_outline,
             onTap: ((){
-              dersKabul();
+              dersKabul(id);
             }) ,
           ),
         ],
     );
   }
 
-  void dersRet() async{
-    
+  void dersRet(String id) async{
+    var idL = new List();
+    idL.add(id);
+    var val = await databaseReference.collection('Cources').getDocuments();
+    for(int i=0 ; i<val.documents.length ; ++i){
+      if(val.documents[i].data['Ders Adı'] == widget.name && 
+              val.documents[i].data['Üniversite'] == widget.uni &&
+              val.documents[i].data['Ders Kodu'] == widget.code){
+        await databaseReference.collection("Cources")
+            .document(val.documents[i].documentID)
+            .updateData({
+              'İstekler': FieldValue.arrayRemove(idL),
+        });
+      }
+    }
   }
 
-  void dersKabul() async{
-    
+  void dersKabul(String id) async{
+    var idL = new List();
+    idL.add(id);
+    var val = await databaseReference.collection('Cources').getDocuments();
+    for(int i=0 ; i<val.documents.length ; ++i){
+      if(val.documents[i].data['Ders Adı'] == widget.name && 
+              val.documents[i].data['Üniversite'] == widget.uni &&
+              val.documents[i].data['Ders Kodu'] == widget.code){
+        await databaseReference.collection("Cources")
+            .document(val.documents[i].documentID)
+            .updateData({
+              'İstekler': FieldValue.arrayRemove(idL),
+        });
+        await databaseReference.collection("Cources")
+          .document(val.documents[i].documentID)
+          .updateData({
+            'Kayıtlılar': FieldValue.arrayUnion(idL),
+        });
+      }
+    }
   }
 }

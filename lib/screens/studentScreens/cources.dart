@@ -32,17 +32,18 @@ class _CourcesState extends State<Cources> {
   }
 
   getCourse() async{
-    /*var names = new List(); 
+    var names = new List(); 
     var codes = new List(); 
     final _fireStore = Firestore.instance;
     var val = await _fireStore.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
-      if((val.documents[i].data['Ders Prof']) == widget.studentName){
+      // eğer kayıtlılar da öğrenci numarası varsa kaydını tut ve ekrana yazdır...
+      if((val.documents[i].data['Kayıtlılar']) == widget.studentName){
         names.add(val.documents[i].data['Ders Adı']);
         codes.add(val.documents[i].data['Ders Kodu']);
       }
     }
-    return [names,codes];*/
+    return [names,codes];
   }
 
   @override
