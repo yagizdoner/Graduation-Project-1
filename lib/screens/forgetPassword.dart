@@ -105,7 +105,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                                   ),
                                   SizedBox(width: MediaQuery.of(context).size.width/50,),
                                   Text(
-                                    'Şifremi Yolla',
+                                    'Şifremi Yenile',
                                     style: TextStyle(
                                       color: Colors.white,
                                     ),
@@ -130,7 +130,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                         children: <Widget> [
                           SizedBox(height:  MediaQuery.of(context).size.height/60),
                           Text(
-                            "      Sisteme kayıtlı e-mail\n  adresinizi girdikten sonra,\nposta kutunuza bir hatırlatma\n     mesajı gönderilecektir.",
+                            "        Sisteme kayıtlı e-mail\n    adresinizi girdikten sonra,\nposta kutunuza şifre yenileme\n       mesajı gönderilecektir.",
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

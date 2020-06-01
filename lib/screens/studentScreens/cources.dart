@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cse465ers/screens/studentScreens/addCource.dart';
 import 'package:cse465ers/screens/studentScreens/courseDetail.dart';
+import 'package:cse465ers/shared/dialogTF.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -101,6 +102,7 @@ class _CourcesState extends State<Cources> {
               ),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
+                  DialogTF();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AddCource(widget.uni, widget.stuNum)),
