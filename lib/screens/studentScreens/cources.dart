@@ -37,10 +37,14 @@ class _CourcesState extends State<Cources> {
     final _fireStore = Firestore.instance;
     var val = await _fireStore.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
-      // eğer kayıtlılar da öğrenci numarası varsa kaydını tut ve ekrana yazdır...
-      if((val.documents[i].data['Kayıtlılar']) == widget.studentName){
-        names.add(val.documents[i].data['Ders Adı']);
-        codes.add(val.documents[i].data['Ders Kodu']);
+      if((val.documents[i].data['Üniversite']) == widget.uni && val.documents[i].data['Kayıtlılar'] != null 
+                                                        && val.documents[i].data['Kayıtlılar'].length > 0){
+        for (int j=0; j<val.documents[i].data['Kayıtlılar'].length; j++) {
+          if(val.documents[i].data['Kayıtlılar'][j] == widget.stuNum){
+            names.add(val.documents[i].data["Ders Adı"]);
+            codes.add(val.documents[i].data["Ders Kodu"]);
+          }
+        }
       }
     }
     return [names,codes];
@@ -150,15 +154,13 @@ class _CourcesState extends State<Cources> {
         ),
         secondaryActions: <Widget>[
           IconSlideAction(
-            caption: 'Çık',
+            caption: 'Dersden Ayrıl',
             color: Colors.red,
             icon: Icons.delete,
             onTap: ((){
               try {
-                databaseReference
-                    .collection('Cources')
-                    .document(id)
-                    .delete();
+                // Dersden Ayrılma Eklenecek...
+                
               } catch (e) {
                 print(e.toString());
               }

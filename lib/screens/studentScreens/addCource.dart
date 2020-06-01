@@ -35,17 +35,26 @@ class _AddCourceState extends State<AddCource> {
     var colle = new List();
     var istek = new List();
     var kayitli = new List();
-    final _fireStore = Firestore.instance;
-    var val = await _fireStore.collection('Cources').getDocuments();
+    var val = await databaseReference.collection('Cources').getDocuments();
+
     for(int i=0 ; i<val.documents.length ; ++i){
       if(val.documents[i].data['Üniversite'] == widget.uni){
-        colle.add(val.documents[i].documentID);
-        names.add(val.documents[i].data['Ders Adı']);
-        codes.add(val.documents[i].data['Ders Kodu']);
-        profs.add(val.documents[i].data["Ders Prof"]);
-        konts.add(val.documents[i].data["Kontenjan"]);
-        istek.add(val.documents[i].data["İstekler"].length);
-        kayitli.add(val.documents[i].data["Kayıtlılar"].length);
+        if(val.documents[i].data['Kayıtlılar'].length > 0){
+          for (int j=0; j<val.documents[i].data['Kayıtlılar'].length; j++) {
+            if(val.documents[i].data['Kayıtlılar'][j] == widget.stuNum){
+              // Öğrenci dersde zaten, herhangi bir şey ekleme.
+            }
+          }
+        }
+        else{
+          colle.add(val.documents[i].documentID);
+          names.add(val.documents[i].data['Ders Adı']);
+          codes.add(val.documents[i].data['Ders Kodu']);
+          profs.add(val.documents[i].data["Ders Prof"]);
+          konts.add(val.documents[i].data["Kontenjan"]);
+          istek.add(val.documents[i].data["İstekler"].length);
+          kayitli.add(val.documents[i].data["Kayıtlılar"].length);
+        }
       }
     }
     return [names,codes,profs,konts,colle,istek,kayitli];

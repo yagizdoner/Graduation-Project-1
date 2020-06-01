@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cse465ers/screens/profScreens/updateCourse.dart';
 import 'package:cse465ers/screens/profScreens/wishes.dart';
 import 'package:cse465ers/shared/loading.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class CourseDetail extends StatefulWidget {
   
@@ -19,30 +21,50 @@ class CourseDetail extends StatefulWidget {
 
 class _CourseDetailState extends State<CourseDetail> {
   bool loading = false;
-
-  String courseName = '';
-  String courseCode = '';
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
   String courseDep = '';
   String profName = '';
-  String courseUni = '';
   String kontenjan = '';
+  Future fut;
 
   @override
   void initState() {
     super.initState();
-    setState(() {
-      courseName = widget.name;
-      courseCode = widget.code;
-      courseUni = widget.uni;
-    });
+    fut = getCourse();
+  }
+
+  getCourse() async{
+    var names = new List();
+    var surnames = new List();
+    var codes = new List();
+    final _fireStore = Firestore.instance;
+    var val = await _fireStore.collection('Cources').getDocuments();
+    for(int i=0 ; i<val.documents.length ; ++i){
+      if((val.documents[i].data['Üniversite']) == widget.uni && val.documents[i].data["Ders Kodu"] == widget.code){
+        var len = val.documents[i].data["Kayıtlılar"];
+        for(int j=0; j<len.length ;++j){
+          codes.add(len[j]);
+        }
+      }
+    }
+    val = await _fireStore.collection('students').getDocuments();
+    for(int j=0; j<codes.length ;++j){
+      for(int i=0; i<val.documents.length ;++i){
+        if(val.documents[i].data['univercity'] == widget.uni && val.documents[i].data['studentNumber'] == codes[j]){
+          names.add(val.documents[i].data["name"]);
+          surnames.add(val.documents[i].data["surname"]);
+        }
+      }
+    }
+    return [names,surnames,codes];
   }
 
   @override
   Widget build(BuildContext context) {
-    return loading ? Loading() : Scaffold(
+    return Scaffold(
        appBar: AppBar(
         backgroundColor: Color(0xFF033140),
-        title: Text(courseName),
+        title: Text(widget.name),
         actions: <Widget>[
           Row(
             children: <Widget>[
@@ -70,7 +92,7 @@ class _CourseDetailState extends State<CourseDetail> {
                 onPressed: () async {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => UpdateCourse(courseCode, courseName)),
+                    MaterialPageRoute(builder: (context) => UpdateCourse(widget.code, widget.name)),
                   );
                 }
               ),
@@ -81,21 +103,43 @@ class _CourseDetailState extends State<CourseDetail> {
       backgroundColor: Color(0xFFD9E6EB),
       body: Container(
         color: Color(0xFFD9E6EB),
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Container(
-                color: Colors.blueGrey,
-                height: MediaQuery.of(context).size.height/5,
+        child: FutureBuilder(
+          future: fut,
+          builder: (BuildContext context,AsyncSnapshot snapshot){
+            if(snapshot.connectionState != ConnectionState.done){
+              return Loading();
+            }
+            if(!snapshot.hasData){
+              return SmartRefresher(
+                enablePullDown: true,
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                header: BezierCircleHeader(),
+                child: Scaffold(
+                  backgroundColor: Color(0xFFD9E6EB),
+                  body: Text("\n\n     KAYITLI DERSİNİZ BULUNMAMAKTADIR..."),
+                ),
+              );
+            }
+            final data = snapshot.data;
+            return Scaffold(
+              backgroundColor: Color(0xFFD9E6EB),
+              body:SmartRefresher(
+                enablePullDown: true,
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                header: BezierCircleHeader(),
+                child: Container(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children:
+                        createRows(data[0],data[1],data[2]),
+                    ),
+                  ),
+                ),
               ),
-              SizedBox(height:10,),
-              createSlidable("Yağız", "Döner", "141044062"),
-              SizedBox(height: 10,),
-              createSlidable("Atakan", "Döner", "180109019"),
-              SizedBox(height: 10,),
-              createSlidable("Öğrenci Adı", "Soyadı", "Numarası"),
-            ],
-          ),
+            );
+          }
         ),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -154,7 +198,7 @@ class _CourseDetailState extends State<CourseDetail> {
                 onPressed: () async {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Wishes(courseName,courseCode, courseUni)),
+                    MaterialPageRoute(builder: (context) => Wishes(widget.name,widget.code, widget.uni)),
                   );
                 }
               ),
@@ -163,6 +207,22 @@ class _CourseDetailState extends State<CourseDetail> {
         )
       ),
     );
+  }
+
+  List<Widget> createRows(name,surname,code){
+    List<Widget> list = new List();
+
+    // Bilgi Ekranı Burası...
+    list.add(Container(
+                color: Colors.blueGrey,
+                height: MediaQuery.of(context).size.height/5,
+              ));
+    
+    for(int i=0; i<code.length ;++i){
+      list.add(createSlidable(name[i],surname[i],code[i]));
+      list.add(SizedBox(height:10,));
+    }
+    return list;
   }
 
   Slidable createSlidable(String studentName, String studentSurname, String id){
@@ -183,12 +243,18 @@ class _CourseDetailState extends State<CourseDetail> {
       ),
       secondaryActions: <Widget>[
         IconSlideAction(
-          caption: 'Sil',
+          caption: 'Dersden Çıkart',
           color: Colors.red,
           icon: Icons.delete,
+          // Dersden Çıkartma Ekle...
           onTap: () => print('Sil'),
         ),
       ],
     );
+  }
+
+  _onRefresh() async{
+    fut = getCourse();
+    setState(() {});
   }
 }

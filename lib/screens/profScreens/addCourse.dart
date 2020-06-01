@@ -24,6 +24,8 @@ class _AddCourceState extends State<AddCource> {
   String kontenjan = '';
   String error = '';
 
+  List emp = new List();
+
   @override
   Widget build(BuildContext context) {
     return loading ? Loading() : Scaffold(
@@ -159,7 +161,7 @@ class _AddCourceState extends State<AddCource> {
                 onPressed: ()  {
                   if(_formKey.currentState.validate()){
                     setState(() => loading = true);
-                    addCourseToDB(courseName, courseCode, courseDep, kontenjan, widget.profName, widget.uni);
+                    addCourseToDB(courseName, courseCode, courseDep, kontenjan, widget.profName, widget.uni, emp);
                     setState(() => loading = false);                                  
                     setState(() {
                       error = 'Ders Eklendi';
@@ -185,7 +187,7 @@ class _AddCourceState extends State<AddCource> {
     );
   }
  
-  void addCourseToDB(String name, String code, String dep, String kont, String prof, String uni ) async {
+  void addCourseToDB(String name, String code, String dep, String kont, String prof, String uni, emp ) async {
     await databaseReference.collection("Cources")
         .document()
         .setData({
@@ -195,6 +197,8 @@ class _AddCourceState extends State<AddCource> {
           'Bölüm': dep,
           'Kontenjan': kont,
           'Üniversite': uni,
+          'İstekler': emp,
+          'Kayıtlılar': emp,
     });
   }
 }

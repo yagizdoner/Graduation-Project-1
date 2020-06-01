@@ -86,7 +86,7 @@ class _ProfileState extends State<Profile> {
                           decoration: new InputDecoration(
                             hintText: number,
                             suffixIcon: Icon(
-                              Icons.phone,
+                              Icons.done,
                               color: Color(0xFF033140),
                             ),
                           ),
