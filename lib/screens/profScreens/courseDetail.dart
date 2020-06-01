@@ -247,7 +247,7 @@ class _CourseDetailState extends State<CourseDetail> {
           color: Colors.red,
           icon: Icons.delete,
           // Dersden Çıkartma Ekle...
-          onTap: () => print('Sil'),
+          onTap: () =>showAlertDialogTF(context,id+" - "+studentName + ' ' + studentSurname),
         ),
       ],
     );
@@ -256,5 +256,32 @@ class _CourseDetailState extends State<CourseDetail> {
   _onRefresh() async{
     fut = getCourse();
     setState(() {});
+  }
+
+  showAlertDialogTF(BuildContext context, String message) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text("Dersden Çıkarmak İstediğinize Emin misiniz?"),
+          content: Text(message),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text("Dersden Çıkar"),
+              onPressed:  () {
+                // DERSDEN ATMAYI BURAYA EKLE
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text("İptal"),
+              onPressed:  () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

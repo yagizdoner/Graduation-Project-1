@@ -155,16 +155,7 @@ class _CourcesState extends State<Cources> {
             color: Colors.red,
             icon: Icons.delete,
             onTap: ((){
-              getDocId(name,id).then((String result){
-                try {
-                  databaseReference
-                      .collection('Cources')
-                      .document(result.toString())
-                      .delete();
-                } catch (e) {
-                  print(e.toString());
-                }
-              });
+              showAlertDialogTF(context, id+" - "+name, name, id);
             }) ,
           ),
         ],
@@ -180,6 +171,42 @@ class _CourcesState extends State<Cources> {
           }
         }
       }
+    );
+  }
+
+  showAlertDialogTF(BuildContext context, String message, name, id) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text("Dersi Silmek İstediğinize Emin misiniz?"),
+          content: Text(message),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text("Dersi Sil"),
+              onPressed:  () {
+                getDocId(name,id).then((String result){
+                  try {
+                    databaseReference
+                        .collection('Cources')
+                        .document(result.toString())
+                        .delete();
+                  } catch (e) {
+                    print(e.toString());
+                  }
+                });
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text("İptal"),
+              onPressed:  () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

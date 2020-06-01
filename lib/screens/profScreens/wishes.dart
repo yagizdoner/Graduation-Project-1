@@ -141,7 +141,7 @@ class _WishesState extends State<Wishes> {
             color: Colors.red,
             icon: Icons.delete_forever,
             onTap: ((){
-              dersRet(id);
+              showAlertDialogRetTF(context, id+" - "+na+" "+su, id);
             }) ,
           ),
           IconSlideAction(
@@ -149,7 +149,7 @@ class _WishesState extends State<Wishes> {
             color: Colors.green,
             icon: Icons.done_outline,
             onTap: ((){
-              dersKabul(id);
+              showAlertDialogKabulTF(context, id+" - "+na+" "+su, id);
             }) ,
           ),
         ],
@@ -193,5 +193,58 @@ class _WishesState extends State<Wishes> {
         });
       }
     }
+  }
+
+  showAlertDialogKabulTF(BuildContext context, String message, id) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text("Öğrenciyi Derse Eklemek İstediğinize Emin misiniz?"),
+          content: Text(message),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text("Derse Ekle"),
+              onPressed:  () {
+                dersKabul(id);
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text("İptal"),
+              onPressed:  () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  showAlertDialogRetTF(BuildContext context, String message, id) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text("Öğrenciyi Reddetmek İstediğinize Emin misiniz?"),
+          content: Text(message),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text("Evet"),
+              onPressed:  () {
+                dersRet(id);
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text("Hayır"),
+              onPressed:  () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

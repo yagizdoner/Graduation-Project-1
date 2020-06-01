@@ -180,7 +180,7 @@ class _AddCourceState extends State<AddCource> {
             color: Colors.blue,
             icon: Icons.add,
             onTap: ((){
-              addWish(colNum,kalanKont);
+              showAlertDialogTF(context, id+" - "+name, colNum, kalanKont);
             }) ,
           ),
         ],
@@ -200,5 +200,32 @@ class _AddCourceState extends State<AddCource> {
     else{
       // Buraya Kontenjan yok tarzında hata kutusu çıkarttır.
     }
+  }
+
+  showAlertDialogTF(BuildContext context, String message, colNum, kalanKont) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text("Derse Kayıt Olmak İstediğinize Emin misiniz?"),
+          content: Text(message),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text("Kayıt Ol"),
+              onPressed:  () {
+                addWish(colNum,kalanKont);
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text("İptal"),
+              onPressed:  () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

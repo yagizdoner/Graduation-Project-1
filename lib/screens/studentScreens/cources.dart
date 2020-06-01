@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cse465ers/screens/studentScreens/addCource.dart';
-import 'package:cse465ers/screens/studentScreens/courseDetail.dart';
-import 'package:cse465ers/shared/dialogTF.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -102,7 +100,6 @@ class _CourcesState extends State<Cources> {
               ),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
-                  DialogTF();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AddCource(widget.uni, widget.stuNum)),
@@ -132,44 +129,59 @@ class _CourcesState extends State<Cources> {
     return list;
   }
 
-  RaisedButton createCourseRow(String name, String id){
-    return RaisedButton(
-      onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CourseDetail(name, id)),
+  Slidable createCourseRow(String name, String id){
+    return Slidable(
+      actionPane: SlidableStrechActionPane(),
+      actionExtentRatio: 0.25,
+      child: Container(
+        color: Colors.white,
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundColor: Colors.indigoAccent,
+            child: Text(id),
+            foregroundColor: Colors.white,
           ),
-      padding: const EdgeInsets.all(0.0),
-      child: Slidable(
-        actionPane: SlidableStrechActionPane(),
-        actionExtentRatio: 0.25,
-        child: Container(
-          color: Colors.white,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.indigoAccent,
-              child: Text(id),
-              foregroundColor: Colors.white,
-            ),
-            title: Text(name),
-            //subtitle: Text(prof),
-          ),
+          title: Text(name),
+          //subtitle: Text(prof),
         ),
-        secondaryActions: <Widget>[
-          IconSlideAction(
-            caption: 'Dersden Ayrıl',
-            color: Colors.red,
-            icon: Icons.delete,
-            onTap: ((){
-              try {
-                // Dersden Ayrılma Eklenecek...
-                
-              } catch (e) {
-                print(e.toString());
-              }
-            }) ,
-          ),
-        ],
       ),
+      secondaryActions: <Widget>[
+        IconSlideAction(
+          caption: 'Dersden Ayrıl',
+          color: Colors.red,
+          icon: Icons.delete,
+          onTap: ((){
+            showAlertDialogTF(context, id+" - "+name);
+          }) ,
+        ),
+      ],
+    );
+  }
+
+  showAlertDialogTF(BuildContext context, String message) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text("Dersden Ayrılmak İstediğininize Emin misiniz?"),
+          content: Text(message),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text("Dersden Ayrıl"),
+              onPressed:  () {
+                // DERSDEN AYRILMAYI BURAYA EKLE
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text("İptal"),
+              onPressed:  () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
