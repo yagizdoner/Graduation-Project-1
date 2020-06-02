@@ -23,6 +23,8 @@ class _CourcesState extends State<Cources> {
   Future fut;
   bool loading = false;
   RefreshController _refreshController = RefreshController(initialRefresh: false);
+  final _fireStore = Firestore.instance;
+
 
   @override
   void initState(){
@@ -33,7 +35,6 @@ class _CourcesState extends State<Cources> {
   getCourse() async{
     var names = new List(); 
     var codes = new List(); 
-    final _fireStore = Firestore.instance;
     var val = await _fireStore.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
       if((val.documents[i].data['Üniversite']) == widget.uni && val.documents[i].data['Kayıtlılar'] != null 
@@ -151,25 +152,25 @@ class _CourcesState extends State<Cources> {
           color: Colors.red,
           icon: Icons.delete,
           onTap: ((){
-            showAlertDialogTF(context, id+" - "+name);
+            showAlertDialogTF(context, id,name);
           }) ,
         ),
       ],
     );
   }
 
-  showAlertDialogTF(BuildContext context, String message) {
+  showAlertDialogTF(BuildContext context, id, name) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
           title: Text("Dersden Ayrılmak İstediğininize Emin misiniz?"),
-          content: Text(message),
+          content: Text(id+" - "+name),
           actions: <Widget>[
             CupertinoDialogAction(
               child: Text("Dersden Ayrıl"),
               onPressed:  () {
-                // DERSDEN AYRILMAYI BURAYA EKLE
+                dropFromCource(id,name);
                 Navigator.pop(context);
               },
             ),
@@ -183,5 +184,23 @@ class _CourcesState extends State<Cources> {
         );
       },
     );
+  }
+
+  dropFromCource(String courceId, String courceName)async{
+    List rem = new List();
+    rem.add(widget.stuNum);
+    var val = await _fireStore.collection('Cources').getDocuments();
+    for(int i=0 ; i<val.documents.length ; ++i){
+      if((val.documents[i].data['Üniversite']) == widget.uni && val.documents[i].data["Ders Kodu"] == courceId
+                                                            && val.documents[i].data["Ders Adı"] == courceName){      
+        print(rem);
+        print(val.documents[i].documentID);
+        await _fireStore.collection("Cources")
+            .document(val.documents[i].documentID)
+            .updateData({
+              'Kayıtlılar':  FieldValue.arrayRemove(rem),
+        });
+      }
+    }
   }
 }

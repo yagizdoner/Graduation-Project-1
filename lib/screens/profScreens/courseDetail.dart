@@ -26,6 +26,7 @@ class _CourseDetailState extends State<CourseDetail> {
   String profName = '';
   String kontenjan = '';
   Future fut;
+  final _fireStore = Firestore.instance;
 
   @override
   void initState() {
@@ -37,10 +38,14 @@ class _CourseDetailState extends State<CourseDetail> {
     var names = new List();
     var surnames = new List();
     var codes = new List();
-    final _fireStore = Firestore.instance;
+    var ist = new List();
+    var kont = new List();
     var val = await _fireStore.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
-      if((val.documents[i].data['Üniversite']) == widget.uni && val.documents[i].data["Ders Kodu"] == widget.code){
+      if((val.documents[i].data['Üniversite']) == widget.uni && val.documents[i].data["Ders Kodu"] == widget.code
+                                                             && val.documents[i].data["Ders Adı"] == widget.name){
+        kont.add(val.documents[i].data['Kontenjan']);
+        ist.add(val.documents[i].data['İstekler'].length);
         var len = val.documents[i].data["Kayıtlılar"];
         for(int j=0; j<len.length ;++j){
           codes.add(len[j]);
@@ -56,7 +61,10 @@ class _CourseDetailState extends State<CourseDetail> {
         }
       }
     }
-    return [names,surnames,codes];
+
+
+
+    return [names,surnames,codes,ist[0],kont[0]];
   }
 
   @override
@@ -133,7 +141,7 @@ class _CourseDetailState extends State<CourseDetail> {
                   child: SingleChildScrollView(
                     child: Column(
                       children:
-                        createRows(data[0],data[1],data[2]),
+                        createRows(data[0],data[1],data[2],data[3],data[4]),
                     ),
                   ),
                 ),
@@ -209,14 +217,26 @@ class _CourseDetailState extends State<CourseDetail> {
     );
   }
 
-  List<Widget> createRows(name,surname,code){
+  List<Widget> createRows(name,surname,code,ist,kont){
     List<Widget> list = new List();
-
     // Bilgi Ekranı Burası...
+    int kalanKont = int.parse(kont) - (ist + code.length);
     list.add(Container(
-                color: Colors.blueGrey,
-                height: MediaQuery.of(context).size.height/5,
-              ));
+      color: Colors.blue[200],
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children:[
+          Text("Derse Kayıtlı Toplam Öğrenci Sayısı : "+ code.length.toString()),
+          SizedBox(height: MediaQuery.of(context).size.height/50),
+          Text("Derse Kayıt Olmak İsteyen Öğrenci Sayısı : "+ist.toString()),
+          SizedBox(height: MediaQuery.of(context).size.height/50),
+          Text("Dersin Kontenjan Durumu : " + "(" +kalanKont.toString() + "/" + kont + ")"),
+        ],
+      ),
+      height: MediaQuery.of(context).size.height/7,
+    ));
     
     for(int i=0; i<code.length ;++i){
       list.add(createSlidable(name[i],surname[i],code[i]));
@@ -247,7 +267,7 @@ class _CourseDetailState extends State<CourseDetail> {
           color: Colors.red,
           icon: Icons.delete,
           // Dersden Çıkartma Ekle...
-          onTap: () =>showAlertDialogTF(context,id+" - "+studentName + ' ' + studentSurname),
+          onTap: () =>showAlertDialogTF(context,id,studentName,studentSurname),
         ),
       ],
     );
@@ -258,18 +278,18 @@ class _CourseDetailState extends State<CourseDetail> {
     setState(() {});
   }
 
-  showAlertDialogTF(BuildContext context, String message) {
+  showAlertDialogTF(BuildContext context, id, studentName, studentSurname) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
           title: Text("Dersden Çıkarmak İstediğinize Emin misiniz?"),
-          content: Text(message),
+          content: Text(id+" - "+studentName + ' ' + studentSurname),
           actions: <Widget>[
             CupertinoDialogAction(
               child: Text("Dersden Çıkar"),
               onPressed:  () {
-                // DERSDEN ATMAYI BURAYA EKLE
+                dropFromCource(id);
                 Navigator.pop(context);
               },
             ),
@@ -284,4 +304,21 @@ class _CourseDetailState extends State<CourseDetail> {
       },
     );
   }
+
+  dropFromCource(String id)async{
+    List rem = new List();
+    rem.add(id);
+    var val = await _fireStore.collection('Cources').getDocuments();
+    for(int i=0 ; i<val.documents.length ; ++i){
+      if((val.documents[i].data['Üniversite']) == widget.uni && val.documents[i].data["Ders Kodu"] == widget.code
+                                                            && val.documents[i].data["Ders Adı"] == widget.name){      
+        await _fireStore.collection("Cources")
+            .document(val.documents[i].documentID)
+            .updateData({
+              'Kayıtlılar':  FieldValue.arrayRemove(rem),
+        });
+      }
+    }
+  }
+
 }
