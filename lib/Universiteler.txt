@@ -22,7 +22,7 @@
 "Sakarya Uygulamalı Bilimler Üniversitesi","Sakarya Üniversitesi","Samsun Üniversitesi","Selçuk Üniversitesi","Siirt Üniversitesi","Sinop Üniversitesi",
 "Sivas Bilim ve Teknoloji Üniversitesi","Sivas Cumhuriyet Üniversitesi","Süleyman Demirel Üniversitesi","Şırnak Üniversitesi","Tarsus Üniversitesi",
 "Tekirdağ Namık Kemal Üniversitesi","Tokat Gaziosmanpaşa Üniversitesi","Trabzon Üniversitesi","Trakya Üniversitesi","Türk-Alman Üniversitesi",
-"Türk-Japon Bilim ve Teknoloji Üniversitesi","Türkiye Uluslararası İslam, Bilim ve Teknoloji Üniversitesi","Uşak Üniversitesi","Van Yüzüncü Yıl Üniversitesi",
+"Türk-Japon Bilim ve Teknoloji Üniversitesi","Uşak Üniversitesi","Van Yüzüncü Yıl Üniversitesi",
 "Yalova Üniversitesi","Yıldız Teknik Üniversitesi","Yozgat Bozok Üniversitesi","Zonguldak Bülent Ecevit Üniversitesi","Acıbadem Mehmet Ali Aydınlar Üniversitesi",
 "Alanya Hamdullah Emin Paşa Üniversitesi","Altınbaş Üniversitesi","Anka Teknoloji Üniversitesi","Ankara Medipol Üniversitesi","Antalya AKEV Üniversitesi",
 "Antalya Bilim Üniversitesi","Ataşehir Adıgüzel Meslek Yüksekokulu","Atılım Üniversitesi","Avrasya Üniversitesi","Avrupa Meslek Yüksekokulu","Bahçeşehir Üniversitesi",
@@ -35,6 +35,6 @@
 "İstanbul Şişli Meslek Yüksekokulu","İstanbul Ticaret Üniversitesi","İstanbul Yeni Yüzyıl Üniversitesi","İstinye Üniversitesi","İzmir Ekonomi Üniversitesi",
 "İzmir Tınaztepe Üniversitesi","Kadir Has Üniversitesi","Kapadokya Üniversitesi","Kavram Meslek Yüksekokulu","Koç Üniversitesi","Konya Gıda ve Tarım Üniversitesi",
 "KTO Karatay Üniversitesi","Lokman Hekim Üniversitesi","Maltepe Üniversitesi","MEF Üniversitesi","Nişantaşı Üniversitesi","Nuh Naci Yazgan Üniversitesi",
-"Ostim Teknik Üniversitesi","Özyeğin Üniversitesi","Piri Reis Üniversitesi","Sabancı Üniversitesi","Sanko Üniversitesi","Semerkand Bilim ve Medeniyet Üniversitesi",
-"TED Üniversitesi","TOBB Ekonomi ve Teknoloji Üniversitesi","Toros Üniversitesi","Türk Hava Kurumu Üniversitesi","Ufuk Üniversitesi","Üsküdar Üniversitesi",
+"Ostim Teknik Üniversitesi","Özyeğin Üniversitesi","Piri Reis Üniversitesi","Sabancı Üniversitesi","Sanko Üniversitesi","TED Üniversitesi",
+"TOBB Ekonomi ve Teknoloji Üniversitesi","Toros Üniversitesi","Türk Hava Kurumu Üniversitesi","Ufuk Üniversitesi","Üsküdar Üniversitesi",
 "Yaşar Üniversitesi","Yeditepe Üniversitesi","Yüksek İhtisas Üniversitesi"]

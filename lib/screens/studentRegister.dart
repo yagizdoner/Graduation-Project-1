@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:cse465ers/services/auth.dart';
@@ -27,7 +28,7 @@ class _StudentRegisterState extends State<StudentRegister> {
   String password = '';
   String error = '';
 
-  List<String> unis = ["Abdullah Gül Üniversitesi","Adana Alparslan Türkeş Bilim ve Teknoloji  Üniversitesi","Adıyaman Üniversitesi",
+  List<String> unis =["Abdullah Gül Üniversitesi","Adana Alparslan Türkeş Bilim ve Teknoloji  Üniversitesi","Adıyaman Üniversitesi",
 "Afyon Kocatepe Üniversitesi","Afyonkarahisar Sağlık Bilimleri Üniversitesi","Akdeniz Üniversitesi","Aksaray Üniversitesi",
 "Alanya Alaaddin Keykubat Üniversitesi","Amasya Üniversitesi","Anadolu Üniversitesi","Ankara Hacı Bayram Veli Üniversitesi",
 "Ankara Müzik ve Güzel Sanatlar Üniversitesi","Ankara Sosyal Bilimler Üniversitesi","Ankara Yıldırım Beyazıt Üniversitesi","Ankara Üniversitesi",
@@ -51,7 +52,7 @@ class _StudentRegisterState extends State<StudentRegister> {
 "Sakarya Uygulamalı Bilimler Üniversitesi","Sakarya Üniversitesi","Samsun Üniversitesi","Selçuk Üniversitesi","Siirt Üniversitesi","Sinop Üniversitesi",
 "Sivas Bilim ve Teknoloji Üniversitesi","Sivas Cumhuriyet Üniversitesi","Süleyman Demirel Üniversitesi","Şırnak Üniversitesi","Tarsus Üniversitesi",
 "Tekirdağ Namık Kemal Üniversitesi","Tokat Gaziosmanpaşa Üniversitesi","Trabzon Üniversitesi","Trakya Üniversitesi","Türk-Alman Üniversitesi",
-"Türk-Japon Bilim ve Teknoloji Üniversitesi","Türkiye Uluslararası İslam, Bilim ve Teknoloji Üniversitesi","Uşak Üniversitesi","Van Yüzüncü Yıl Üniversitesi",
+"Türk-Japon Bilim ve Teknoloji Üniversitesi","Uşak Üniversitesi","Van Yüzüncü Yıl Üniversitesi",
 "Yalova Üniversitesi","Yıldız Teknik Üniversitesi","Yozgat Bozok Üniversitesi","Zonguldak Bülent Ecevit Üniversitesi","Acıbadem Mehmet Ali Aydınlar Üniversitesi",
 "Alanya Hamdullah Emin Paşa Üniversitesi","Altınbaş Üniversitesi","Anka Teknoloji Üniversitesi","Ankara Medipol Üniversitesi","Antalya AKEV Üniversitesi",
 "Antalya Bilim Üniversitesi","Ataşehir Adıgüzel Meslek Yüksekokulu","Atılım Üniversitesi","Avrasya Üniversitesi","Avrupa Meslek Yüksekokulu","Bahçeşehir Üniversitesi",
@@ -64,9 +65,36 @@ class _StudentRegisterState extends State<StudentRegister> {
 "İstanbul Şişli Meslek Yüksekokulu","İstanbul Ticaret Üniversitesi","İstanbul Yeni Yüzyıl Üniversitesi","İstinye Üniversitesi","İzmir Ekonomi Üniversitesi",
 "İzmir Tınaztepe Üniversitesi","Kadir Has Üniversitesi","Kapadokya Üniversitesi","Kavram Meslek Yüksekokulu","Koç Üniversitesi","Konya Gıda ve Tarım Üniversitesi",
 "KTO Karatay Üniversitesi","Lokman Hekim Üniversitesi","Maltepe Üniversitesi","MEF Üniversitesi","Nişantaşı Üniversitesi","Nuh Naci Yazgan Üniversitesi",
-"Ostim Teknik Üniversitesi","Özyeğin Üniversitesi","Piri Reis Üniversitesi","Sabancı Üniversitesi","Sanko Üniversitesi","Semerkand Bilim ve Medeniyet Üniversitesi",
-"TED Üniversitesi","TOBB Ekonomi ve Teknoloji Üniversitesi","Toros Üniversitesi","Türk Hava Kurumu Üniversitesi","Ufuk Üniversitesi","Üsküdar Üniversitesi",
+"Ostim Teknik Üniversitesi","Özyeğin Üniversitesi","Piri Reis Üniversitesi","Sabancı Üniversitesi","Sanko Üniversitesi","TED Üniversitesi",
+"TOBB Ekonomi ve Teknoloji Üniversitesi","Toros Üniversitesi","Türk Hava Kurumu Üniversitesi","Ufuk Üniversitesi","Üsküdar Üniversitesi",
 "Yaşar Üniversitesi","Yeditepe Üniversitesi","Yüksek İhtisas Üniversitesi"];
+
+List<String> mails = ["agu.edu.tr","atu.edu.tr","adiyaman.edu.tr","aku.edu.tr","afsu.edu.tr","akdeniz.edu.tr","aksaray.edu.tr","alanya.edu.tr",
+"amasya.edu.tr","anadolu.edu.tr","ahbv.edu.tr","mgu.edu.tr","asbu.edu.tr","aybu.edu.tr","ankara.edu.tr","ardahan.edu.tr",
+"artvin.edu.tr","atauni.edu.tr","adu.edu.tr","agri.edu.tr","balikesir.edu.tr","bandirma.edu.tr","bartin.edu.tr","batman.edu.tr",
+"bayburt.edu.tr","bilecik.edu.tr","bingol.edu.tr","bitliseren.edu.tr","ibu.edu.tr","boun.edu.tr","mehmetakif.edu.tr","btu.edu.tr",
+"uludag.edu.tr","comu.edu.tr","karatekin.edu.tr","cu.edu.tr","dicle.edu.tr","deu.edu.tr","duzce.edu.tr","ege.edu.tr","erciyes.edu.tr",
+"ebyu.edu.tr","erzurum.edu.tr","ogu.edu.tr","eskisehir.edu.tr","firat.edu.tr","gsu.edu.tr","gazi.edu.tr","gibtu.net","gantep.edu.tr",
+"gtu.edu.tr","giresun.edu.tr","gumushane.edu.tr","hacettepe.edu.tr","hakkari.edu.tr","harran.edu.tr","mku.edu.tr","hitit.edu.tr",
+"isparta.edu.tr","igdir.edu.tr","inonu.edu.tr","iste.edu.tr","medeniyet.edu.tr","itu.edu.tr","istanbul.edu.tr","istanbulc.edu.tr",
+"bakircay.edu.tr","idu.edu.tr","ikc.edu.tr","iyte.edu.tr","kafkas.edu.tr","istiklal.edu.tr","ksu.edu.tr","karabuk.edu.tr",
+"ktu.edu.tr","kmu.edu.tr","kastamonu.edu.tr","kayseri.edu.tr","kilis.edu.tr","kocaeli.edu.tr","ktun.edu.tr","dumlupinar.edu.tr",
+"ksbu.edu.tr","kku.edu.tr","klu.edu.tr","ahievran.edu.tr","ozal.edu.tr","mcbu.edu.tr","artuklu.edu.tr","marmara.edu.tr",
+"mersin.edu.tr","msgsu.edu.tr","mu.edu.tr","munzur.edu.tr","alparslan.edu.tr","erbakan.edu.tr","nevsehir.edu.tr","ohu.edu.tr",
+"omu.edu.tr","odu.edu.tr","metu.edu.tr","osmaniye.edu.tr","pau.edu.tr","erdogan.edu.tr","sbu.edu.tr","subu.edu.tr","sakarya.edu.tr",
+"samsun.edu.tr","selcuk.edu.tr","siirt.edu.tr","sinop.edu.tr","sivas.edu.tr","cumhuriyet.edu.tr","sdu.edu.tr","sirnak.edu.tr",
+"tarsus.edu.tr","nku.edu.tr","gop.edu.tr","trabzon.edu.tr","trakya.edu.tr","tau.edu.tr","tju.edu.tr","usak.edu.tr","yyu.edu.tr",
+"yalova.edu.tr","yildiz.edu.tr","bozok.edu.tr","beun.edu.tr","acibadem.edu.tr","ahep.edu.tr","altinbas.edu.tr","anka.edu.tr",
+"ankaramedipol.edu.tr","akev.edu.tr","antalya.edu.tr","adiguzel.edu.tr","atilim.edu.tr","avrasya.edu.tr","avrupa.edu.tr",
+"bau.edu.tr","baskent.edu.tr","beykent.edu.tr","beykoz.edu.tr","bezmialem.edu.tr","biruni.edu.tr","cag.edu.tr","cankaya.edu.tr",
+"dogus.edu.tr","faruksarac.edu.tr","fatihsultan.edu.tr","fbu.edu.tr","halic.edu.tr","hku.edu.tr","isikun.edu.tr","bilkent.edu.tr",
+"29mayis.edu.tr","arel.edu.tr","atlas.edu.tr","aydin.edu.tr","ayvansaray.edu.tr","bilgi.edu.tr","istanbulbilim.edu.tr",
+"esenyurt.edu.tr","gedik.edu.tr","gelisim.edu.tr","ihu.edu.tr","kent.edu.tr","iku.edu.tr","medipol.edu.tr","okan.edu.tr",
+"rumeli.edu.tr","izu.edu.tr","sehir.edu.tr","sisli.edu.tr","ticaret.edu.tr","yeniyuzyil.edu.tr","istinye.edu.tr","ieu.edu.tr",
+"tinaztepe.edu.tr","khas.edu.tr","kapadokya.edu.tr","kavram.edu.tr","ku.edu.tr","gidatarim.edu.tr","karatay.edu.tr",
+"lokmanhekim.edu.tr","maltepe.edu.tr","mef.edu.tr","nisantasi.edu.tr","nny.edu.tr","ostimteknik.edu.tr","ozyegin.edu.tr",
+"pirireis.edu.tr","sabanciuniv.edu","sanko.edu.tr","tedu.edu.tr","etu.edu.tr","toros.edu.tr","thk.org.tr","ufuk.edu.tr",
+"uskudar.edu.tr","yasar.edu.tr","yeditepe.edu.tr","yiu.edu.tr"];
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +153,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                                 ),
                               ),
                               cursorColor: Color(0xFF033140),
-                              validator: (val) => val.isEmpty ? 'Lütfen İsim Giriniz' : null,
+                              validator: (val) => val.isEmpty ? null : null,
                               onChanged: (val) {
                                 setState(() => name = val);
                               },
@@ -143,7 +171,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                                 ),
                               ),
                               cursorColor: Color(0xFF033140),
-                              validator: (val) => val.isEmpty ? 'Lütfen Soyisim Giriniz' : null,
+                              validator: (val) => val.isEmpty ? null : null,
                               onChanged: (val) {
                                 setState(() => surname = val);
                               },
@@ -183,7 +211,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                                 ),
                               ),
                               cursorColor: Color(0xFF033140),
-                              validator: (val) => val.isEmpty ? 'Lütfen Öğrenci Numarası Giriniz' : null,
+                              validator: (val) => val.isEmpty ? null : null,
                               onChanged: (val) {
                                 setState(() => studentNumber = val);
                               },
@@ -201,7 +229,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                                 ),
                               ),
                               cursorColor: Color(0xFF033140),
-                              validator: (val) => val.isEmpty ? 'Lütfen Mail Giriniz' : null,
+                              validator: (val) => val.isEmpty ? null : null,
                               onChanged: (val) {
                                 setState(() => email = val);
                               },
@@ -220,7 +248,7 @@ class _StudentRegisterState extends State<StudentRegister> {
                               ),
                               obscureText: true,
                               cursorColor: Color(0xFF033140),
-                              validator: (val) => val.length < 6 ? 'Şifre En Az 6 Karakter Olmalı' : null,
+                              validator: (val) => val.length < 6 ? null : null,
                               onChanged: (val) {
                                 setState(() => password = val);
                               },
@@ -278,15 +306,26 @@ class _StudentRegisterState extends State<StudentRegister> {
                   ),
                   onPressed: () async {
                     if(_formKey.currentState.validate()){
-                      setState(() => loading = true);
-                      dynamic result = await _auth.registerStudent(email, name, surname, studentNumber, univercity, password);
-                      if(result == null) {
-                        setState(() {
-                          error = 'Lütfen Geçerli Bir Mail Giriniz';
-                          loading = false;
-                        });
+                      var mail = email.split('@'); // girilen mailin uzantısı var.
+                      var u = unis.indexOf(univercity);
+                      var m = mails.indexOf(mail[1]);
+                      if(u == m){
+                        setState(() => loading = true);
+                        dynamic result = await _auth.registerStudent(email, name, surname, studentNumber, univercity, password);
+                        if(result == null) {
+                          setState(() => loading = false);
+                          showAlertDialog(context, "Kayıt Olunamadı! Kaydınız Olabilir.");                          
+                        }
+                        else{ // Kayıt Olunduysa
+                          Navigator.pop(context);
+                        }
                       }
-                      Navigator.pop(context);
+                      else{
+                        showAlertDialog(context, "Universiteniz ve Mail Uzantınız Eşleşmemektedir !");
+                      }
+                    }
+                    else{ // Formda eksik yerler varsa
+                        showAlertDialog(context, "Tüm Alanların Doldurulması Zorunludur. Şifre en az 6 karakter olmalıdır.");
                     }
                   }
                 ),
@@ -299,7 +338,25 @@ class _StudentRegisterState extends State<StudentRegister> {
           ),
         )
       ),
-      
+    );
+  }
+
+  showAlertDialog(BuildContext context, String mes) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text(mes),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text("Tamam"),
+              onPressed:  () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

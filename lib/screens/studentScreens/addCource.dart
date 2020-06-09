@@ -167,8 +167,24 @@ class _AddCourceState extends State<AddCource> {
     setState(() {});
   }
 
-  List<Widget> createCourse(name,code,prof,kont,col,ist,kay,isVar){
+  List<Widget> createCourse(List name,List code,List prof,List kont,List col,List ist,List kay,List isVar){
     List<Widget> list = new List();
+    list.add(TextFormField(
+        decoration: new InputDecoration(
+          hintText: '   Dersleri Filtrelemek İçin Ders Kodu Giriniz',
+          suffixIcon: Icon(
+            Icons.filter_list,
+            color: Color(0xFF033140),
+          ),
+        ),
+        obscureText: true,
+        cursorColor: Color(0xFF033140),
+        onChanged: (val) {
+
+        },
+      ),
+    );
+    list.add(SizedBox(height: MediaQuery.of(context).size.height / 50));
     for(int i=0; i<name.length ;++i){
       list.add(createCourseRow(name[i], code[i], prof[i], kont[i], col[i], ist[i], kay[i], isVar[i]));
       list.add(SizedBox(height:10,));
