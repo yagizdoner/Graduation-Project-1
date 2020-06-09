@@ -1,3 +1,4 @@
+import 'package:cse465ers/services/auth.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,8 @@ class _ForgetPasswordState extends State<ForgetPassword> {
 
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
+  final AuthService _auth = AuthService();
+
 
   // text field state
   String email = '';
@@ -113,7 +116,13 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                                 ],
                               ),
                             ),
-                            onPressed: () async {}
+                            onPressed: () async {
+                              setState(() {
+                                loading = true;
+                              });
+                              _auth.updatePass(email);
+                              Navigator.pop(context);
+                            }
                           ),
                           SizedBox(height: MediaQuery.of(context).size.height/60),
                           Text(

@@ -101,8 +101,13 @@ class AuthService{
     }
   }
 
-  Future<void> updatePass(String email) async{
-    await _auth.sendPasswordResetEmail(email: email);
+  Future<void> updatePass(String _email) async{
+    try{
+      await _auth.sendPasswordResetEmail(email: _email);
+    }
+    catch(e){
+      print(e.toString());
+    }
   }
 
   // sign out
