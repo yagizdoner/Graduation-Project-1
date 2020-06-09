@@ -3,7 +3,6 @@ import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class AddCource extends StatefulWidget {
@@ -16,10 +15,11 @@ class AddCource extends StatefulWidget {
 
 class _AddCourceState extends State<AddCource> {
 
-   final databaseReference = Firestore.instance;
+  final databaseReference = Firestore.instance;
   Future fut;
   bool loading = false;
   RefreshController _refreshController = RefreshController(initialRefresh: false);
+  String filt = "-1";
 
   @override
   void initState(){
@@ -39,7 +39,45 @@ class _AddCourceState extends State<AddCource> {
     var val = await databaseReference.collection('Cources').getDocuments();
 
     for(int i=0 ; i<val.documents.length ; ++i){
-      if(val.documents[i].data['Üniversite'] == widget.uni){
+      // Filtreleme Yok İse Tüm Dersleri Seç
+      if(val.documents[i].data['Üniversite'] == widget.uni && filt == "-1"){
+        int t=0;
+        if(val.documents[i].data['Kayıtlılar'].length > 0){
+          for (int j=0; j<val.documents[i].data['Kayıtlılar'].length; j++) {
+            if(val.documents[i].data['Kayıtlılar'][j] == widget.stuNum){
+              // Öğrenci dersde zaten, herhangi bir şey ekleme.
+              t=1;
+            }
+          }
+        }
+        if(t==0){
+          int f=0;
+          colle.add(val.documents[i].documentID);
+          names.add(val.documents[i].data['Ders Adı']);
+          codes.add(val.documents[i].data['Ders Kodu']);
+          profs.add(val.documents[i].data["Ders Prof"]);
+          konts.add(val.documents[i].data["Kontenjan"]);
+          istek.add(val.documents[i].data["İstekler"].length);
+          kayitli.add(val.documents[i].data["Kayıtlılar"].length);
+          if(val.documents[i].data['İstekler'].length > 0){
+            for (int j=0; j<val.documents[i].data['İstekler'].length; j++) {
+              if(val.documents[i].data['İstekler'][j] == widget.stuNum){
+                // Öğrenci derse kayıt isteğinde bulunmuş zaten.
+                f=1;
+                istekVar.add("1");
+              }
+            }
+            if(f==0){
+              istekVar.add("0");
+            }
+          }
+          else{
+            istekVar.add("0");
+          }
+        }
+      }
+      // Filtreleme Durumu varsa
+      else if(val.documents[i].data['Üniversite'] == widget.uni && val.documents[i].data['Ders Kodu'].toString().contains(filt)){
         int t=0;
         if(val.documents[i].data['Kayıtlılar'].length > 0){
           for (int j=0; j<val.documents[i].data['Kayıtlılar'].length; j++) {
@@ -85,38 +123,29 @@ class _AddCourceState extends State<AddCource> {
       appBar: AppBar(
         automaticallyImplyLeading: true,
         backgroundColor: Color(0xFF033140),
-        title: Text("Açık Dersler"),
-        actions: <Widget>[
-          Row(
-            children: <Widget>[
-               RaisedButton(
-                color: Color(0xFF033140),
-                child: Container(
-                  width: MediaQuery.of(context).size.width/6,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        MdiIcons.filter,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width:MediaQuery.of(context).size.height/90),
-                      Text(
-                        'Filtre',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                onPressed: () async {
-                  print("FİLTRELEME UYGULANACAK");
-                }
-              ),
-            ],
-          )
-        ],
+        title: TextFormField(
+          style: TextStyle(
+            color: Color(0xFFD9E6EB),
+          ),
+          decoration: new InputDecoration(
+            hintText: 'Filtrelemek İçin Ders Kodu Giriniz',
+            hintStyle: TextStyle(
+              color: Colors.white
+            ),
+            suffixIcon: Icon(
+              Icons.filter_list,
+              color: Colors.white,
+            ),
+          ),
+          obscureText: false,
+          cursorColor: Colors.white,
+          onChanged: (val) {
+            setState(() {
+              filt = val;
+            });
+            fut = getCourse();
+          },
+        ),
       ),
       body: Container(
         child: FutureBuilder(
@@ -151,11 +180,11 @@ class _AddCourceState extends State<AddCource> {
                       child: Column(
                         children:
                           createCourse(data[0], data[1], data[2], data[3], data[4], data[5], data[6],data[7])
-                     ),
+                      ),
                     ),
                   ),
                 ),
-            );
+              );
           },
         ),
       ),
@@ -163,27 +192,14 @@ class _AddCourceState extends State<AddCource> {
   }
 
    _onRefresh() async{
+    setState(() {
+      filt = "-1";
+    });
     fut = getCourse();
-    setState(() {});
   }
 
   List<Widget> createCourse(List name,List code,List prof,List kont,List col,List ist,List kay,List isVar){
-    List<Widget> list = new List();
-    list.add(TextFormField(
-        decoration: new InputDecoration(
-          hintText: '   Dersleri Filtrelemek İçin Ders Kodu Giriniz',
-          suffixIcon: Icon(
-            Icons.filter_list,
-            color: Color(0xFF033140),
-          ),
-        ),
-        obscureText: true,
-        cursorColor: Color(0xFF033140),
-        onChanged: (val) {
-
-        },
-      ),
-    );
+    List<Widget> list = new List();    
     list.add(SizedBox(height: MediaQuery.of(context).size.height / 50));
     for(int i=0; i<name.length ;++i){
       list.add(createCourseRow(name[i], code[i], prof[i], kont[i], col[i], ist[i], kay[i], isVar[i]));
