@@ -1,11 +1,8 @@
 import 'dart:async';
-
 import 'package:cse465ers/models/student.dart';
 import 'package:cse465ers/models/prof.dart';
 import 'package:cse465ers/services/database.dart';
-import 'package:cse465ers/shared/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 
 class AuthService{
 
@@ -34,11 +31,15 @@ class AuthService{
   }
 
   // sign in email & password Student
-  Future signInWithEmailAndPassword(String email, String password) async{
+  Future signInWithEmailAndPasswordStudent(String email, String password) async{
     try{
       AuthResult result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       FirebaseUser student = result.user;
-      return _studentFromFirebaseStudent(student);
+      return _studentFromFirebaseStudent(student); // verification açınca bu satırı sil.
+      /*if(student.isEmailVerified){
+        return _studentFromFirebaseStudent(student);
+      }
+      return null;*/
     } catch(e){
       print(e.toString());
       return null;
@@ -50,7 +51,11 @@ class AuthService{
     try{
       AuthResult result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       FirebaseUser prof = result.user;
-      return _profFromFirebaseProf(prof);
+      return _profFromFirebaseProf(prof);  // verification açınca, bu satırı sil.
+      /*if (prof.isEmailVerified){ 
+        return _profFromFirebaseProf(prof);
+      }
+      return null;*/
     } catch(e){
       print(e.toString());
       return null;
@@ -62,7 +67,7 @@ class AuthService{
     try{
       AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       FirebaseUser student = result.user;
-      //create a new document for the user with the uid
+      // await student.sendEmailVerification();
       await DatabaseService(uid:student.uid).updateStudentData(email, name, surname, studentNumber, univercity);
       return _studentFromFirebaseStudent(student);
     } catch(e){
@@ -73,32 +78,16 @@ class AuthService{
 
   // register with email & password
   Future registerProf(String email, String name, String surname, String phoneNumber, String univercity, String password) async{
-    try{
+    try {
       AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       FirebaseUser prof = result.user;
-      //create a new document for the user with the uid
+      // await prof.sendEmailVerification();
       await DatabaseService(uid:prof.uid).updateProfData(email, name, surname, phoneNumber, univercity);
       return _profFromFirebaseProf(prof);
-      /*
-      await prof.sendEmailVerification();
-      int _start = 180;
-      while(_start > 0){
-        print(_start);
-        await Future.delayed(Duration(seconds: 1));
-        _start = _start - 1;
-        if(prof.isEmailVerified){
-          print("verified");
-          await DatabaseService(uid:prof.uid).updateProfData(email, name, surname, phoneNumber, univercity);
-          return _profFromFirebaseProf(prof);
-        }
-      }
-      prof.delete();
-      return null;
-      */
-    } catch(e){
-      print(e.toString());
-      return null;
-    }
+     } catch (e) {
+        print(e.message);
+        return null;
+     }
   }
 
   Future<void> updatePass(String _email) async{

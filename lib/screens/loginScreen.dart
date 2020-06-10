@@ -152,10 +152,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 });
                                 fut = await getUserType();  
                                 if(fut == 0){
-                                  dynamic result =  _auth.signInWithEmailAndPasswordProf(email, password);
+                                  var result = await _auth.signInWithEmailAndPasswordProf(email, password);
                                   if(result == null) {
                                     setState(() {
-                                      error = 'Şifre Hatalı';
+                                      error = 'Şifre Hatalı veya Mail Doğrulamadınız';
                                       loading = false;
                                     });
                                   }
@@ -167,10 +167,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   }
                                 }
                                 else if(fut == 1){
-                                  dynamic result =  _auth.signInWithEmailAndPassword(email, password);
+                                  var result = await  _auth.signInWithEmailAndPasswordStudent(email, password);
                                   if(result == null) {
                                     setState(() {
-                                      error = 'Şifre Hatalı';
+                                      error = 'Şifre Hatalı veya Mail Doğrulamadınız';
                                       loading = false;
                                     });
                                   }

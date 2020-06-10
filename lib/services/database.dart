@@ -60,7 +60,7 @@ class DatabaseService {
   }
 
   // studentData from snapshot
-  StudentData _StudentDataFromSnapshot(DocumentSnapshot snapshot){
+  StudentData _studentDataFromSnapshot(DocumentSnapshot snapshot){
     return StudentData(
       uid: uid,
       mail: snapshot.data['mail'] ,
@@ -72,7 +72,7 @@ class DatabaseService {
   }
 
   // studentData from snapshot
-  ProfData _ProfDataFromSnapshot(DocumentSnapshot snapshot){
+  ProfData _profDataFromSnapshot(DocumentSnapshot snapshot){
     return ProfData(
       uid: uid,
       mail: snapshot.data['mail'] ,
@@ -83,7 +83,7 @@ class DatabaseService {
     );
   }
 
-  Stream<List<StudentInfo>> get brews{
+  Stream<List<StudentInfo>> get student{
     return studentCollection.snapshots()
     .map(_studentListFromSnapshot);
   }
@@ -94,14 +94,14 @@ class DatabaseService {
   }
 
   // get user doc stream
-  Stream<StudentData> get userData{
+  Stream<StudentData> get studentData{
     return studentCollection.document(uid).snapshots()
-    .map(_StudentDataFromSnapshot);
+    .map(_studentDataFromSnapshot);
   }
 
   // get prof doc stream
   Stream<ProfData> get profData{
     return profCollection.document(uid).snapshots()
-    .map(_ProfDataFromSnapshot);
+    .map(_profDataFromSnapshot);
   }
 }
