@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cse465ers/services/auth.dart';
+import 'package:cse465ers/screens/profScreens/profSc.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class UpdateCourse extends StatefulWidget {
 
   final String code;
   final String name;
-  const UpdateCourse(this.code, this.name);
+  final String user;
+  const UpdateCourse(this.code, this.name, this.user);
 
   @override
   _UpdateCourseState createState() => _UpdateCourseState();
@@ -95,7 +95,6 @@ class _UpdateCourseState extends State<UpdateCourse> {
                             ),
                           ),
                           cursorColor: Color(0xFF033140),
-                          validator: (val) => val.isEmpty ? 'Lütfen Ders Adı Giriniz' : null,
                           onChanged: (val) {
                             setState(() => courseName = val);
                           },
@@ -113,7 +112,6 @@ class _UpdateCourseState extends State<UpdateCourse> {
                             ),
                           ),
                           cursorColor: Color(0xFF033140),
-                          validator: (val) => val.isEmpty ? 'Lütfen Ders Kodu Giriniz' : null,
                           onChanged: (val) {
                             setState(() => courseCode = val);
                           },
@@ -131,7 +129,6 @@ class _UpdateCourseState extends State<UpdateCourse> {
                             ),
                           ),
                           cursorColor: Color(0xFF033140),
-                          validator: (val) => val.isEmpty ? 'Lütfen Bölüm Giriniz' : null,
                           onChanged: (val) {
                             setState(() => courseDep = val);
                           },
@@ -149,7 +146,6 @@ class _UpdateCourseState extends State<UpdateCourse> {
                             ),
                           ),
                           cursorColor: Color(0xFF033140),
-                          validator: (val) => val.isEmpty ? 'Lütfen Kontenjan Giriniz' : null,
                           onChanged: (val) {
                             setState(() => kontenjan = val);
                           },
@@ -182,20 +178,23 @@ class _UpdateCourseState extends State<UpdateCourse> {
                   ),
                 ),
                 onPressed: ()  {
-                  if(_formKey.currentState.validate()){
-                    setState(() => loading = true);
-                    updateCourseToDB(courseName, courseCode, courseDep, kontenjan);
-                    setState(() => loading = false);                                  
-                    setState(() {
-                      error = 'Güncellendi';
-                    });
-                  }
-                  else{
-                    setState(() {
-                      error = 'Lütfen Gerekli Yerleri Doldurunuz';
-                      loading = false;
-                    });
-                  }
+                  if(courseName.length==0)
+                    courseName = ad;
+                  if(courseCode.length==0)
+                    courseCode = kod;
+                  if(courseDep.length==0)
+                    courseDep = dep;
+                  if(kontenjan.length==0)
+                    kontenjan = kont;
+                  updateCourseToDB(courseName, courseCode, courseDep, kontenjan);
+                  setState(() {
+                    error = 'Güncellendi';
+                  });   
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfSc(widget.user)),
+                  );    
+                  showAlertDialog(context, "Ders Güncellendi", "Lütfen Sayfayı Yenileyiniz.");         
                 }
               ),
               SizedBox(height: MediaQuery.of(context).size.height/60),
@@ -246,5 +245,25 @@ class _UpdateCourseState extends State<UpdateCourse> {
         });
       }
     }
+  }
+
+  showAlertDialog(BuildContext context, String mes, String cont) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text(mes),
+          content: Text(cont),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text("Tamam"),
+              onPressed:  () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

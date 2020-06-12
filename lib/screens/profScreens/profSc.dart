@@ -28,7 +28,7 @@ class _ProfScState extends State<ProfSc> {
   String userSurname = '';
   String uni = '';
 
-  int bodyNum = 0; // Default -> Derslerim Ekranı
+  int bodyNum = 1; // Default -> Messages Screen
   final AuthService _auth = AuthService();
   bool loading = false;
 
@@ -189,13 +189,13 @@ class _ProfScState extends State<ProfSc> {
   Widget bodyScreen (bodyNum, name, uni){
     switch (bodyNum) {
       case 0:
-        return Cources(name, uni);
+        return Cources(name, uni, widget.user);
       case 1:
         return Message();
       case 2:
         return Profile(widget.user);
       default:
-        return Cources(name, uni);
+        return Cources(name, uni, widget.user);
     }
   }
 }

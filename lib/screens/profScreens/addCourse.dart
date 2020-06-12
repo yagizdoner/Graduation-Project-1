@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
@@ -160,17 +162,12 @@ class _AddCourceState extends State<AddCource> {
                 ),
                 onPressed: ()  {
                   if(_formKey.currentState.validate()){
-                    setState(() => loading = true);
                     addCourseToDB(courseName, courseCode, courseDep, kontenjan, widget.profName, widget.uni, emp);
-                    setState(() => loading = false);                                  
-                    setState(() {
-                      error = 'Ders Eklendi';
-                    });
+                    showAlertDialog(context, courseCode+" - "+courseName ,"Ders Başarıyla Eklenmiştir.");
                   }
                   else{
                     setState(() {
                       error = 'Lütfen Gerekli Yerleri Doldurunuz';
-                      loading = false;
                     });
                   }
                 }
@@ -200,5 +197,25 @@ class _AddCourceState extends State<AddCource> {
           'İstekler': emp,
           'Kayıtlılar': emp,
     });
+  }
+
+  showAlertDialog(BuildContext context, String head, String mes) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text(head),
+          content: Text(mes),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text("Tamam"),
+              onPressed:  () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

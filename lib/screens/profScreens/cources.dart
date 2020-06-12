@@ -12,7 +12,8 @@ class Cources extends StatefulWidget {
   
   final String profName;
   final String uni;
-  const Cources(this.profName, this.uni);
+  final String user;
+  const Cources(this.profName, this.uni, this.user);
   
   @override
   _CourcesState createState() => _CourcesState();
@@ -29,22 +30,30 @@ class _CourcesState extends State<Cources> {
   void initState(){
     super.initState();
     fut = getCourse();
+    setState(() {});
   }
 
   getCourse() async{
     var names = new List(); 
     var codes = new List();
     var unis = new List();
+    var kont = new List();
+    var ist = new List();
+    var kay = new List();
     final _fireStore = Firestore.instance;
     var val = await _fireStore.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
-      if((val.documents[i].data['Ders Prof']) == widget.profName){
+      if(val.documents[i].data['Ders Prof'] == widget.profName &&
+          val.documents[i].data['Üniversite'] == widget.uni){
         names.add(val.documents[i].data['Ders Adı']);
         codes.add(val.documents[i].data['Ders Kodu']);
         unis.add(val.documents[i].data['Üniversite']);
+        kont.add(val.documents[i].data['Kontenjan']);
+        ist.add(val.documents[i].data['İstekler'].length);
+        kay.add(val.documents[i].data['Kayıtlılar'].length);
       }
     }
-    return [names,codes,unis];
+    return [names,codes,unis,kont,ist,kay];
   }
 
   @override
@@ -91,7 +100,7 @@ class _CourcesState extends State<Cources> {
                   child: SingleChildScrollView(
                     child: Column(
                       children:
-                        createCourse(data[0], data[1], data[2])
+                        createCourse(data[0], data[1], data[2], data[3], data[4], data[5])
                     ),
                   ),
                 ),
@@ -118,46 +127,67 @@ class _CourcesState extends State<Cources> {
     setState(() {});
   }
 
-  List<Widget> createCourse(name,code,uni){
+  List<Widget> createCourse(name,code,uni,kont,ist,kay){
     List<Widget> list = new List();
     for(int i=0; i<name.length ;++i){
-      list.add(createCourseRow(name[i], code[i], uni[i]));
+      list.add(createCourseRow(name[i], code[i], uni[i], kont[i], ist[i], kay[i]));
       list.add(SizedBox(height:10,));
     }
     return list;
   }
 
-  RaisedButton createCourseRow(String name, String id, String uni){
+  RaisedButton createCourseRow(String name, String id, String uni, String kont, int ist, int kay){
+    int kalanKont = int.parse(kont) - (ist + kay);
     return RaisedButton(
       onPressed: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CourseDetail(name, id, uni)),
+            MaterialPageRoute(builder: (context) => CourseDetail(name, id, uni, widget.user)),
           ),
       padding: const EdgeInsets.all(0.0),
-      child: Slidable(
-        actionPane: SlidableStrechActionPane(),
-        actionExtentRatio: 0.25,
-        child: Container(
-          color: Colors.white,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.indigoAccent,
-              child: Text(id),
-              foregroundColor: Colors.white,
+      child: Column(
+        children: <Widget>[
+          Slidable(
+            actionPane: SlidableStrechActionPane(),
+            actionExtentRatio: 0.25,
+            child: Container(
+              color: Colors.white,
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: Colors.indigoAccent,
+                  child: Text(id),
+                  foregroundColor: Colors.white,
+                ),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children:[
+                    Text(name),
+                    Column(
+                      //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children:[
+                        Text("Kontenjan Durumu : " + "(" +kalanKont.toString() + "/" + kont + ")"),
+                        SizedBox(height: MediaQuery.of(context).size.height/80),
+                        Text("Kayıtlı Öğrenci: "+ kay.toString()),
+                        SizedBox(height: MediaQuery.of(context).size.height/80),
+                        Text("Kayıt İsteği : "+ ist.toString()),
+                      ]
+                    )
+                  ],
+                ),
+              ),
             ),
-            title: Text(name),
-            //subtitle: Text(prof),
+            secondaryActions: <Widget>[
+              IconSlideAction(
+                caption: 'Sil',
+                color: Colors.red,
+                icon: Icons.delete,
+                onTap: ((){
+                  showAlertDialogTF(context, id+" - "+name, name, id);
+                }) ,
+              ),
+            ],
           ),
-        ),
-        secondaryActions: <Widget>[
-          IconSlideAction(
-            caption: 'Sil',
-            color: Colors.red,
-            icon: Icons.delete,
-            onTap: ((){
-              showAlertDialogTF(context, id+" - "+name, name, id);
-            }) ,
-          ),
+          
         ],
       ),
     );

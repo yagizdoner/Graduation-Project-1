@@ -77,7 +77,9 @@ class _AddCourceState extends State<AddCource> {
         }
       }
       // Filtreleme Durumu varsa
-      else if(val.documents[i].data['Üniversite'] == widget.uni && val.documents[i].data['Ders Kodu'].toString().contains(filt)){
+      else if(val.documents[i].data['Üniversite'] == widget.uni && 
+              (val.documents[i].data['Ders Adı'].toString().toLowerCase().contains(filt.toLowerCase())
+                  || val.documents[i].data['Ders Kodu'].toString().contains(filt))){
         int t=0;
         if(val.documents[i].data['Kayıtlılar'].length > 0){
           for (int j=0; j<val.documents[i].data['Kayıtlılar'].length; j++) {

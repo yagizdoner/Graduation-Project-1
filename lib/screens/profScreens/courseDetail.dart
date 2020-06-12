@@ -13,7 +13,8 @@ class CourseDetail extends StatefulWidget {
   final String name;
   final String code;
   final String uni;
-  const CourseDetail(this.name, this.code, this.uni);
+  final String user;
+  const CourseDetail(this.name, this.code, this.uni, this.user);
 
   @override
   _CourseDetailState createState() => _CourseDetailState();
@@ -38,14 +39,14 @@ class _CourseDetailState extends State<CourseDetail> {
     var names = new List();
     var surnames = new List();
     var codes = new List();
-    var ist = new List();
-    var kont = new List();
+    String ist = "";
+    String kont = "";
     var val = await _fireStore.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
       if((val.documents[i].data['Üniversite']) == widget.uni && val.documents[i].data["Ders Kodu"] == widget.code
                                                              && val.documents[i].data["Ders Adı"] == widget.name){
-        kont.add(val.documents[i].data['Kontenjan']);
-        ist.add(val.documents[i].data['İstekler'].length);
+        kont = val.documents[i].data['Kontenjan'];
+        ist = val.documents[i].data['İstekler'].length.toString();
         var len = val.documents[i].data["Kayıtlılar"];
         for(int j=0; j<len.length ;++j){
           codes.add(len[j]);
@@ -61,10 +62,7 @@ class _CourseDetailState extends State<CourseDetail> {
         }
       }
     }
-
-
-
-    return [names,surnames,codes,ist[0],kont[0]];
+    return [names,surnames,codes,ist,kont];
   }
 
   @override
@@ -100,7 +98,7 @@ class _CourseDetailState extends State<CourseDetail> {
                 onPressed: () async {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => UpdateCourse(widget.code, widget.name)),
+                    MaterialPageRoute(builder: (context) => UpdateCourse(widget.code, widget.name, widget.user)),
                   );
                 }
               ),
@@ -220,7 +218,7 @@ class _CourseDetailState extends State<CourseDetail> {
   List<Widget> createRows(name,surname,code,ist,kont){
     List<Widget> list = new List();
     // Bilgi Ekranı Burası...
-    int kalanKont = int.parse(kont) - (ist + code.length);
+    int kalanKont = int.parse(kont) - (int.parse(ist) + code.length);
     list.add(Container(
       color: Colors.blue[200],
       width: MediaQuery.of(context).size.width,
