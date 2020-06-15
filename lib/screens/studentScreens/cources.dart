@@ -19,12 +19,10 @@ class Cources extends StatefulWidget {
 
 class _CourcesState extends State<Cources> {
   
-  final databaseReference = Firestore.instance;
   Future fut;
   bool loading = false;
   RefreshController _refreshController = RefreshController(initialRefresh: false);
   final _fireStore = Firestore.instance;
-
 
   @override
   void initState(){

@@ -168,7 +168,7 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
                 onPressed: ()  {
-                  print("SİL E BASILDI");
+                  showAlertDialogTF(context);
                 }
               ),
             ],
@@ -189,7 +189,6 @@ class _ProfileState extends State<Profile> {
         databaseReference.collection('profs')
                 .document(val).updateData({'univercity': uni,
                                         'phoneNumber': phone,});
-                                        // ŞİFRE UNUTMA !!!
       }
     });
   }
@@ -211,5 +210,30 @@ class _ProfileState extends State<Profile> {
         });
       }
     });
+  }
+
+  showAlertDialogTF(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text("Silmek İstediğine Emin misin?"),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text("Sil"),
+              onPressed:  () {
+                
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text("İptal"),
+              onPressed:  () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
