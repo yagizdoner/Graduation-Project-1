@@ -194,7 +194,7 @@ class _UpdateCourseState extends State<UpdateCourse> {
                     context,
                     MaterialPageRoute(builder: (context) => ProfSc(widget.user)),
                   );    
-                  showAlertDialog(context, "Ders Güncellendi", "Lütfen Sayfayı Yenileyiniz.");         
+                  showAlertDialog(context, "Ders Güncellendi");         
                 }
               ),
               SizedBox(height: MediaQuery.of(context).size.height/60),
@@ -247,13 +247,12 @@ class _UpdateCourseState extends State<UpdateCourse> {
     }
   }
 
-  showAlertDialog(BuildContext context, String mes, String cont) {
+  showAlertDialog(BuildContext context, String mes) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
           title: Text(mes),
-          content: Text(cont),
           actions: <Widget>[
             CupertinoDialogAction(
               child: Text("Tamam"),

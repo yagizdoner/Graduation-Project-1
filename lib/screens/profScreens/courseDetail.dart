@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cse465ers/screens/profScreens/sendMessage.dart';
 import 'package:cse465ers/screens/profScreens/updateCourse.dart';
 import 'package:cse465ers/screens/profScreens/wishes.dart';
 import 'package:cse465ers/shared/loading.dart';
@@ -177,7 +178,10 @@ class _CourseDetailState extends State<CourseDetail> {
                   ),
                 ),
                 onPressed: () async {
-                  print("Mesaj Göndere Basıldı.");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SendMessage(widget.name, widget.code)),
+                  );
                 }
               ),
               RaisedButton(
@@ -191,7 +195,7 @@ class _CourseDetailState extends State<CourseDetail> {
                         Icons.assignment_turned_in,
                         color: Colors.white,
                       ),
-                      SizedBox(width:MediaQuery.of(context).size.height/40),
+                      SizedBox(width:MediaQuery.of(context).size.width/30),
                       Text(
                         'İstekler',
                         style: TextStyle(
