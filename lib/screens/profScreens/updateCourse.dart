@@ -9,7 +9,8 @@ class UpdateCourse extends StatefulWidget {
   final String code;
   final String name;
   final String user;
-  const UpdateCourse(this.code, this.name, this.user);
+  final String uni;
+  const UpdateCourse(this.code, this.name, this.user, this.uni);
 
   @override
   _UpdateCourseState createState() => _UpdateCourseState();
@@ -233,7 +234,9 @@ class _UpdateCourseState extends State<UpdateCourse> {
     QuerySnapshot _myDoc = await Firestore.instance.collection('Cources').getDocuments();
     List<DocumentSnapshot> _myDocCount = _myDoc.documents;
     for(int i=0; i<_myDocCount.length ;++i){
-      if(_myDocCount[i].data["Ders Kodu"] == widget.code && _myDocCount[i].data["Ders Adı"] == widget.name){
+      if(_myDocCount[i].data["Ders Kodu"] == widget.code && 
+         _myDocCount[i].data["Ders Adı"] == widget.name  &&
+         _myDocCount[i].data["Üniversite"] == widget.uni){
         DocumentReference document = databaseReference.collection('Cources').document(_myDocCount[i].documentID);
         await document.get().then<dynamic>(( DocumentSnapshot snapshot) async{
           setState(() {

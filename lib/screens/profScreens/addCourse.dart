@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
@@ -196,6 +194,9 @@ class _AddCourceState extends State<AddCource> {
           'Üniversite': uni,
           'İstekler': emp,
           'Kayıtlılar': emp,
+          'Mesajlar': emp,
+          'MesajÖğr': emp,
+          'MesajAkd': emp,
     });
   }
 

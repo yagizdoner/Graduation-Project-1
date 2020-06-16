@@ -29,6 +29,10 @@ class _CourseDetailState extends State<CourseDetail> {
   String kontenjan = '';
   Future fut;
   final _fireStore = Firestore.instance;
+  
+  var names = new List();
+  var surnames = new List();
+  var codes = new List();
 
   @override
   void initState() {
@@ -37,9 +41,6 @@ class _CourseDetailState extends State<CourseDetail> {
   }
 
   getCourse() async{
-    var names = new List();
-    var surnames = new List();
-    var codes = new List();
     String ist = "";
     String kont = "";
     var val = await _fireStore.collection('Cources').getDocuments();
@@ -99,7 +100,7 @@ class _CourseDetailState extends State<CourseDetail> {
                 onPressed: () async {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => UpdateCourse(widget.code, widget.name, widget.user)),
+                    MaterialPageRoute(builder: (context) => UpdateCourse(widget.code, widget.name, widget.user, widget.uni)),
                   );
                 }
               ),
@@ -180,7 +181,7 @@ class _CourseDetailState extends State<CourseDetail> {
                 onPressed: () async {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SendMessage(widget.name, widget.code)),
+                    MaterialPageRoute(builder: (context) => SendMessage(widget.name, widget.code, widget.uni,names,surnames,codes,widget.user)),
                   );
                 }
               ),
@@ -276,6 +277,9 @@ class _CourseDetailState extends State<CourseDetail> {
   }
 
   _onRefresh() async{
+    names = new List();
+    surnames = new List();
+    codes = new List();
     fut = getCourse();
     setState(() {});
   }
