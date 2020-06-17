@@ -191,11 +191,11 @@ class _ProfScState extends State<ProfSc> {
       case 0:
         return Cources(name, uni, widget.user);
       case 1:
-        return Message();
+        return Message(widget.user);
       case 2:
         return Profile(widget.user);
       default:
-        return Cources(name, uni, widget.user);
+        return Message(widget.user);
     }
   }
 }

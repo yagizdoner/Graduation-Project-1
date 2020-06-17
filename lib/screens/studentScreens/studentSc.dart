@@ -28,7 +28,7 @@ class _StudentScState extends State<StudentSc> {
   String userName = '';
   String userSurname = '';
 
-  int bodyNum = 0; // Default -> Derslerim Ekranı
+  int bodyNum = 1; // Default -> Mesajlar Ekranı
   final AuthService _auth = AuthService();
   bool loading = false;
 
@@ -192,11 +192,11 @@ class _StudentScState extends State<StudentSc> {
       case 0:
         return Cources(name, nu, un);
       case 1:
-        return Message();
+        return Message(widget.user);
       case 2:
         return Profile(widget.user);
       default:
-        return Cources(name, nu, un);
+        return Message(widget.user);
     }
   }
 }
