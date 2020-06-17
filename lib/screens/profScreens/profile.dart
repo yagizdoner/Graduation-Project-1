@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cse465ers/main.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -222,7 +223,7 @@ class _ProfileState extends State<Profile> {
             CupertinoDialogAction(
               child: Text("Sil"),
               onPressed:  () {
-                
+                deleteUser();
               },
             ),
             CupertinoDialogAction(
@@ -235,5 +236,23 @@ class _ProfileState extends State<Profile> {
         );
       },
     );
+  }
+
+  deleteUser() async{
+    final _fireStore = Firestore.instance;
+    var val = await _fireStore.collection('profs').getDocuments();
+    for(int i=0 ; i<val.documents.length ; ++i){
+      if(val.documents[i].data['mail'] == widget.mail){
+        var id = val.documents[i].documentID;
+        await _fireStore.collection('profs').document(id).delete();
+        FirebaseUser user = await FirebaseAuth.instance.currentUser();
+        user.delete();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MyApp()),
+        );
+        break;
+      }
+    }
   }
 }

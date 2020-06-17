@@ -183,6 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }
                                 else{
                                   setState(() {
+                                    loading = false;
                                     error = "Kullanıcı Bulunamadı !";
                                   });
                                 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cse465ers/main.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -91,7 +92,7 @@ class _ProfileState extends State<Profile> {
                             ),
                           ),
                           cursorColor: Color(0xFF033140),
-                          validator: (val) => val.isEmpty ? 'Lütfen Telefon Giriniz' : null,
+                          validator: (val) => val.isEmpty ? 'Lütfen Numaranızı Giriniz' : null,
                           onChanged: (val) {
                             setState(() => stuNumber = val);
                           },
@@ -212,7 +213,7 @@ class _ProfileState extends State<Profile> {
     });
   }
 
-  showAlertDialogTF(BuildContext context) {
+  showAlertDialogTF(BuildContext context){
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -221,8 +222,8 @@ class _ProfileState extends State<Profile> {
           actions: <Widget>[
             CupertinoDialogAction(
               child: Text("Sil"),
-              onPressed:  () {
-                
+              onPressed:  () async{
+                deleteUser();
               },
             ),
             CupertinoDialogAction(
@@ -235,5 +236,23 @@ class _ProfileState extends State<Profile> {
         );
       },
     );
+  }
+
+  deleteUser() async{
+    final _fireStore = Firestore.instance;
+    var val = await _fireStore.collection('students').getDocuments();
+    for(int i=0 ; i<val.documents.length ; ++i){
+      if(val.documents[i].data['mail'] == widget.mail){
+        var id = val.documents[i].documentID;
+        await _fireStore.collection('students').document(id).delete();
+        FirebaseUser user = await FirebaseAuth.instance.currentUser();
+        user.delete();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MyApp()),
+        );
+        break;
+      }
+    }
   }
 }
