@@ -137,6 +137,16 @@ class _SendMessageState extends State<SendMessage> {
   }
 
   void sendMess(String mes) async {
+    var currDt = DateTime.now();
+    var year = currDt.year;
+    var mon = currDt.month;
+    var day = currDt.day;
+    var hour =currDt.hour; 
+    var min = currDt.minute;
+    var sec = currDt.second;
+    String date = day.toString()+"-"+mon.toString()+"-"+year.toString()
+            +"-"+(hour+3).toString()+"-"+min.toString()+"-"+sec.toString();
+
     // Akademisyene Yaz
     QuerySnapshot _myDoc = await Firestore.instance.collection('profs').getDocuments();
     List<DocumentSnapshot> _myDocCount = _myDoc.documents;
@@ -144,7 +154,7 @@ class _SendMessageState extends State<SendMessage> {
       if(_myDocCount[i].data["mail"] == widget.akaEmail){
         try {
           List m = new List();
-          m.add(widget.code+"@"+widget.name+"@"+mes);
+          m.add(date+"@"+widget.code+"@"+widget.name+"@"+mes);
           databaseReference
               .collection('profs')
               .document(_myDocCount[i].documentID)
@@ -166,7 +176,7 @@ class _SendMessageState extends State<SendMessage> {
         && widget.stuCodes.contains(number) && _myDocCount[i].data["univercity"]==widget.uni){
         try {
           List m = new List();
-          m.add(widget.code+"@"+widget.name+"@"+mes);
+          m.add(date+"@"+widget.code+"@"+widget.name+"@"+mes);
           databaseReference
               .collection('students')
               .document(_myDocCount[i].documentID)

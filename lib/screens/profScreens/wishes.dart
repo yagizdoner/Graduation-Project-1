@@ -140,46 +140,78 @@ class _WishesState extends State<Wishes> {
     return list;
   }
 
-  Slidable createStudentRow(String id, String na, String su, pic){
-    return Slidable(
-        actionPane: SlidableStrechActionPane(),
-        actionExtentRatio: 0.25,
-        child: Container(
-          color: Colors.white,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.indigoAccent,
-              child: ClipOval(
-                child: new SizedBox(
-                  width: MediaQuery.of(context).size.width/4,
-                  height: MediaQuery.of(context).size.height/10,
-                  child: pic,
-                ),
+  RaisedButton createStudentRow(String id, String na, String su, pic){
+    return RaisedButton(
+      onPressed: () => showGeneralDialog(
+        barrierLabel: "Barrier",
+        barrierDismissible: true,
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionDuration: Duration(milliseconds: 700),
+        context: context,
+        pageBuilder: (_, __, ___) {
+          return Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 300,
+              child: SizedBox.expand(
+                child: pic,
               ),
-              foregroundColor: Colors.white,
+              margin: EdgeInsets.only(bottom: 50, left: 12, right: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(40),
+              ),
             ),
-            title: Text(na + " " + su),
-            subtitle: Text(id),
+          );
+        },
+        transitionBuilder: (_, anim, __, child) {
+          return SlideTransition(
+            position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+            child: child,
+          );
+        },
+      ),
+      padding: const EdgeInsets.all(0.0),
+          child: Slidable(
+          actionPane: SlidableStrechActionPane(),
+          actionExtentRatio: 0.25,
+          child: Container(
+            color: Colors.white,
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Colors.indigoAccent,
+                child: ClipOval(
+                  child: new SizedBox(
+                    width: MediaQuery.of(context).size.width/4,
+                    height: MediaQuery.of(context).size.height/10,
+                    child: pic,
+                  ),
+                ),
+                foregroundColor: Colors.white,
+              ),
+              title: Text(na + " " + su),
+              subtitle: Text(id),
+            ),
           ),
-        ),
-        secondaryActions: <Widget>[
-          IconSlideAction(
-            caption: 'İptal',
-            color: Colors.red,
-            icon: Icons.delete_forever,
-            onTap: ((){
-              showAlertDialogRetTF(context, id+" - "+na+" "+su, id);
-            }) ,
-          ),
-          IconSlideAction(
-            caption: 'Kabul',
-            color: Colors.green,
-            icon: Icons.done_outline,
-            onTap: ((){
-              showAlertDialogKabulTF(context, id+" - "+na+" "+su, id);
-            }) ,
-          ),
-        ],
+          secondaryActions: <Widget>[
+            IconSlideAction(
+              caption: 'İptal',
+              color: Colors.red,
+              icon: Icons.delete_forever,
+              onTap: ((){
+                showAlertDialogRetTF(context, id+" - "+na+" "+su, id);
+              }) ,
+            ),
+            IconSlideAction(
+              caption: 'Kabul',
+              color: Colors.green,
+              icon: Icons.done_outline,
+              onTap: ((){
+                showAlertDialogKabulTF(context, id+" - "+na+" "+su, id);
+              }) ,
+            ),
+          ],
+      ),
     );
   }
 

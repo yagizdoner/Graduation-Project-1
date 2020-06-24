@@ -29,6 +29,7 @@ class _MessageState extends State<Message> {
     var names = new List(); 
     var codes = new List();
     var message = new List();
+    var dates = new List();
     final _fireStore = Firestore.instance;
     var val = await _fireStore.collection('students').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
@@ -37,15 +38,16 @@ class _MessageState extends State<Message> {
         if(mes!=null){ 
           for(int j=0; j<mes.length ;++j){
             var sp = mes[j].split('@');
-            codes.add(sp[0]);
-            names.add(sp[1]);
-            message.add(sp[2]);
+            dates.add(sp[0]);
+            codes.add(sp[1]);
+            names.add(sp[2]);
+            message.add(sp[3]);
           }
           break;
         }
       }
     }
-    return [names,codes,message];
+    return [names,codes,message,dates];
   }
 
   @override
@@ -82,7 +84,7 @@ class _MessageState extends State<Message> {
                   child: SingleChildScrollView(
                     child: Column(
                       children:
-                        createCourse(data[0], data[1], data[2])
+                        createCourse(data[0], data[1], data[2],data[3])
                     ),
                   ),
                 ),
@@ -99,7 +101,7 @@ class _MessageState extends State<Message> {
     setState(() {});
   }
 
-  List<Widget> createCourse(name,code,mess){
+  List<Widget> createCourse(name,code,mess,date){
     List<Widget> list = new List();
     if(name.length == 0){
       list.add(SizedBox(height: 40,));
@@ -111,13 +113,21 @@ class _MessageState extends State<Message> {
       ));
     }
     for(int i=0; i<name.length ;++i){
-      list.add(createCourseRow(name[i], code[i], mess[i]));
+      list.add(createCourseRow(name[i], code[i], mess[i],date[i]));
       list.add(SizedBox(height:10,));
     }
     return list;
   }
 
-  RaisedButton createCourseRow(String name, String id, String message){
+  RaisedButton createCourseRow(String name, String id, String message, String date){
+    var d = date.split("-");
+    String da =  ((d[0].length < 2)?("0"+ d[0]):(d[0])) 
+    + ":" + ((d[1].length < 2)?("0"+ d[1]):(d[1])) + ":" + d[2];
+    String sa =  ((d[3].length < 2)?("0"+ d[3]):(d[3]))  + ":"
+              +  ((d[4].length < 2)?("0"+ d[4]):(d[4]))  + ":"
+              +  ((d[5].length < 2)?("0"+ d[5]):(d[5])) ;
+    var ms = message.split("\n");
+    var ln = ms.length;
     return RaisedButton(
       onPressed: () => showAlertDialog(context, message),
       padding: const EdgeInsets.all(0.0),
@@ -134,8 +144,22 @@ class _MessageState extends State<Message> {
                   child: Text(id),
                   foregroundColor: Colors.white,
                 ),
-                title: Text(name),
-                subtitle: Text(message),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children:[
+                    Text(name),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children:[
+                        SizedBox(height: MediaQuery.of(context).size.height/80),
+                        Text(da),
+                        SizedBox(height: MediaQuery.of(context).size.height/80),
+                        Text(sa),
+                      ]
+                    )
+                  ],
+                ),
+                subtitle:(ln > 1)?Text(ms[0] + "..."):Text(ms[0]),
               ),
             ),
             secondaryActions: <Widget>[

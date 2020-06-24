@@ -165,11 +165,11 @@ class _CourcesState extends State<Cources> {
                       //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children:[
-                        Text("Kontenjan Durumu : " + "(" +kalanKont.toString() + "/" + kont + ")"),
+                        Text("Kontenjan : " + "(" +kalanKont.toString() + "/" + kont + ")"),
                         SizedBox(height: MediaQuery.of(context).size.height/80),
-                        Text("Kayıtlı Öğrenci: "+ kay.toString()),
+                        Text("Mevcut : "+ kay.toString()),
                         SizedBox(height: MediaQuery.of(context).size.height/80),
-                        Text("Kayıt İsteği : "+ ist.toString()),
+                        Text("İstek : "+ ist.toString()),
                       ]
                     )
                   ],

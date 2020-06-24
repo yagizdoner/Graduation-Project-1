@@ -269,38 +269,76 @@ class _CourseDetailState extends State<CourseDetail> {
     return list;
   }
 
-  Slidable createSlidable(String studentName, String studentSurname, String id, pic){
-    return Slidable(
-      actionPane: SlidableStrechActionPane(),
-      actionExtentRatio: 0.25,
-      child: Container(
-        color: Colors.white,
-        child: ListTile(
-          leading: CircleAvatar(
-            radius: MediaQuery.of(context).size.width/10,
-            backgroundColor: Colors.indigoAccent,
-            child: ClipOval(
-              child: new SizedBox(
-                width: MediaQuery.of(context).size.width/7,
-                height: MediaQuery.of(context).size.height/10,
+  RaisedButton createSlidable(String studentName, String studentSurname, String id, pic){
+    return RaisedButton(
+      onPressed: () => showGeneralDialog(
+        barrierLabel: "Barrier",
+        barrierDismissible: true,
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionDuration: Duration(milliseconds: 700),
+        context: context,
+        pageBuilder: (_, __, ___) {
+          return Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 300,
+              child: SizedBox.expand(
                 child: pic,
               ),
+              margin: EdgeInsets.only(bottom: 50, left: 12, right: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(40),
+              ),
             ),
-            foregroundColor: Colors.white,
-          ),
-          title: Text(studentName + ' ' + studentSurname + '  ( '+id+' ) '),
-          //subtitle: Text(id),
-        ),
+          );
+        },
+        transitionBuilder: (_, anim, __, child) {
+          return SlideTransition(
+            position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+            child: child,
+          );
+        },
       ),
-      secondaryActions: <Widget>[
-        IconSlideAction(
-          caption: 'Dersden Çıkart',
-          color: Colors.red,
-          icon: Icons.delete,
-          // Dersden Çıkartma Ekle...
-          onTap: () =>showAlertDialogTF(context,id,studentName,studentSurname),
+      padding: const EdgeInsets.all(0.0),
+          child: Slidable(
+        actionPane: SlidableStrechActionPane(),
+        actionExtentRatio: 0.25,
+        child: Container(
+          height: MediaQuery.of(context).size.height/9,
+          color: Colors.white,
+          child: Column(
+            children: <Widget>[
+              SizedBox(height: MediaQuery.of(context).size.height/70,),
+              ListTile(
+                leading: CircleAvatar(
+                  radius: MediaQuery.of(context).size.width/10,
+                  backgroundColor: Colors.indigoAccent,
+                  child: ClipOval(
+                    child: new SizedBox(
+                      width: MediaQuery.of(context).size.width/7,
+                      height: MediaQuery.of(context).size.height/5,
+                      child: pic,
+                    ),
+                  ),
+                  foregroundColor: Colors.white,
+                ),
+                title: Text(studentName + ' ' + studentSurname + '  ( '+id+' ) '),
+                //subtitle: Text(id),
+              ),
+            ],
+          ),
         ),
-      ],
+        secondaryActions: <Widget>[
+          IconSlideAction(
+            caption: 'Dersden Çıkart',
+            color: Colors.red,
+            icon: Icons.delete,
+            // Dersden Çıkartma Ekle...
+            onTap: () =>showAlertDialogTF(context,id,studentName,studentSurname),
+          ),
+        ],
+      ),
     );
   }
 
