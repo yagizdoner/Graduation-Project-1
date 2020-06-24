@@ -20,6 +20,7 @@ class DatabaseService {
       'surname': surname,
       'studentNumber': studentNumber,
       'univercity': univercity,
+      'profilePicture': "no",
     });
   }
 
@@ -30,6 +31,7 @@ class DatabaseService {
       'surname': surname,
       'phoneNumber': phoneNumber,
       'univercity': univercity,
+      'profilePicture': "no",
     });
   }
 

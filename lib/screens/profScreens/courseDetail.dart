@@ -3,6 +3,7 @@ import 'package:cse465ers/screens/profScreens/sendMessage.dart';
 import 'package:cse465ers/screens/profScreens/updateCourse.dart';
 import 'package:cse465ers/screens/profScreens/wishes.dart';
 import 'package:cse465ers/shared/loading.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -33,6 +34,7 @@ class _CourseDetailState extends State<CourseDetail> {
   var names = new List();
   var surnames = new List();
   var codes = new List();
+  var pics = new List();
 
   @override
   void initState() {
@@ -61,10 +63,29 @@ class _CourseDetailState extends State<CourseDetail> {
         if(val.documents[i].data['univercity'] == widget.uni && val.documents[i].data['studentNumber'] == codes[j]){
           names.add(val.documents[i].data["name"]);
           surnames.add(val.documents[i].data["surname"]);
+          String n = val.documents[i].data["profilePicture"];
+          if(n!= "no"){
+            var ref = FirebaseStorage.instance.ref().child(n);
+            await ref.getDownloadURL().then((val) => setState(() {
+              String url = val;
+              var image = Image.network(
+                url,
+                fit: BoxFit.cover,
+              );
+              pics.add(image);
+            }));
+          }
+          else{
+            var image = Image(
+              image: AssetImage('assets/profile.png'),
+              fit: BoxFit.cover,
+            );
+            pics.add(image);
+          }
         }
       }
     }
-    return [names,surnames,codes,ist,kont];
+    return [names,surnames,codes,ist,kont,pics];
   }
 
   @override
@@ -141,7 +162,7 @@ class _CourseDetailState extends State<CourseDetail> {
                   child: SingleChildScrollView(
                     child: Column(
                       children:
-                        createRows(data[0],data[1],data[2],data[3],data[4]),
+                        createRows(data[0],data[1],data[2],data[3],data[4],data[5]),
                     ),
                   ),
                 ),
@@ -220,7 +241,7 @@ class _CourseDetailState extends State<CourseDetail> {
     );
   }
 
-  List<Widget> createRows(name,surname,code,ist,kont){
+  List<Widget> createRows(name,surname,code,ist,kont, pics){
     List<Widget> list = new List();
     // Bilgi Ekranı Burası...
     int kalanKont = int.parse(kont) - (int.parse(ist) + code.length);
@@ -242,13 +263,13 @@ class _CourseDetailState extends State<CourseDetail> {
     ));
     
     for(int i=0; i<code.length ;++i){
-      list.add(createSlidable(name[i],surname[i],code[i]));
+      list.add(createSlidable(name[i],surname[i],code[i],pics[i]));
       list.add(SizedBox(height:10,));
     }
     return list;
   }
 
-  Slidable createSlidable(String studentName, String studentSurname, String id){
+  Slidable createSlidable(String studentName, String studentSurname, String id, pic){
     return Slidable(
       actionPane: SlidableStrechActionPane(),
       actionExtentRatio: 0.25,
@@ -256,8 +277,15 @@ class _CourseDetailState extends State<CourseDetail> {
         color: Colors.white,
         child: ListTile(
           leading: CircleAvatar(
+            radius: MediaQuery.of(context).size.width/10,
             backgroundColor: Colors.indigoAccent,
-            child: Text(studentName[0] + studentSurname[0]),
+            child: ClipOval(
+              child: new SizedBox(
+                width: MediaQuery.of(context).size.width/7,
+                height: MediaQuery.of(context).size.height/10,
+                child: pic,
+              ),
+            ),
             foregroundColor: Colors.white,
           ),
           title: Text(studentName + ' ' + studentSurname + '  ( '+id+' ) '),
@@ -275,6 +303,8 @@ class _CourseDetailState extends State<CourseDetail> {
       ],
     );
   }
+
+  
 
   _onRefresh() async{
     names = new List();

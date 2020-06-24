@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cse465ers/main.dart';
+import 'package:cse465ers/screens/studentScreens/studentSc.dart';
 import 'package:cse465ers/shared/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Profile extends StatefulWidget {
   
@@ -22,10 +27,12 @@ class _ProfileState extends State<Profile> {
   String univercity = '';
   String stuNumber = '';
   String number = '';
+  String imageName = 'no';
   bool loading = false;
-
   final _formKey = GlobalKey<FormState>();
   final databaseReference = Firestore.instance;
+  File _image;
+  String url;
 
   @override
   void initState() {
@@ -33,8 +40,18 @@ class _ProfileState extends State<Profile> {
     getStudentDetailFromDB();
   }
 
+  getPic() async{
+    if(imageName != "no"){
+      var ref = FirebaseStorage.instance.ref().child(imageName);
+      ref.getDownloadURL().then((val) => setState(() {
+          url = val;
+      }));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    getPic();
     return loading ? Loading() : Scaffold(
       backgroundColor: Color(0xFFD9E6EB),
       body: Container(
@@ -42,7 +59,68 @@ class _ProfileState extends State<Profile> {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              SizedBox(height: MediaQuery.of(context).size.height/10),
+              SizedBox(height: MediaQuery.of(context).size.height/40),
+              Row(
+                children: <Widget>[
+                  SizedBox(width: MediaQuery.of(context).size.width/4),
+                  Align(
+                    alignment: Alignment.center,
+                    child: CircleAvatar(
+                      radius: 100,
+                      backgroundColor: Color(0xff476cfb),
+                      child: ClipOval(
+                        child: new SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
+                          child: (url!=null)? Image.network(
+                                                url,
+                                                fit: BoxFit.cover,
+                                              )
+                                              : Image(
+                                                image: AssetImage('assets/profile.png'),
+                                                fit: BoxFit.cover,
+                                              ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: MediaQuery.of(context).size.width/30),
+                  IconButton(
+                    iconSize: 40,
+                    icon: Icon(
+                        Icons.camera_enhance,
+                        color: Colors.black,
+                      ),
+                    onPressed: (){
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return CupertinoAlertDialog(
+                              title: Text("Resim Seçiniz."),
+                              actions: <Widget>[
+                                CupertinoDialogAction(
+                                  child: Text("Kamera"),
+                                  onPressed:  () async{
+                                    openCamera();
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                CupertinoDialogAction(
+                                  child: Text("Galeri"),
+                                  onPressed:  () {
+                                    openGallery();
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height/60),
               Container(
                 margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.height/12, 
                                             MediaQuery.of(context).size.height/36, 
@@ -114,7 +192,7 @@ class _ProfileState extends State<Profile> {
                         Icons.add,
                         color: Colors.white,
                       ),
-                      SizedBox(width:MediaQuery.of(context).size.width/100),
+                      SizedBox(width:MediaQuery.of(context).size.width/30),
                       Text(
                         'Kaydet',
                         style: TextStyle(
@@ -141,12 +219,10 @@ class _ProfileState extends State<Profile> {
                   }
                 }
               ),
-              SizedBox(height: MediaQuery.of(context).size.height/60),
               Text(
                 error,
                 style: TextStyle(color: Colors.red, fontSize: 14.0),
               ),
-              SizedBox(height:MediaQuery.of(context).size.height/10),
               RaisedButton(
                 color: Color(0xFF033140),
                 child: Container(
@@ -207,7 +283,8 @@ class _ProfileState extends State<Profile> {
           setState(() {
             uni=snapshot.data["univercity"];
             number=snapshot.data["studentNumber"];
-          });
+            imageName=snapshot.data["profilePicture"];
+            });
         });
       }
     });
@@ -235,6 +312,51 @@ class _ProfileState extends State<Profile> {
           ],
         );
       },
+    );
+  }
+
+  void openCamera() async{
+    var img = await ImagePicker.pickImage(source: ImageSource.camera);
+    if(img != null){
+      setState(() {
+        _image = img;
+      });
+      uploadPic();
+    }
+  }
+
+  void openGallery() async{
+    var img = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if(img != null){
+      setState(() {
+        _image = img;
+      });
+      uploadPic();
+    }
+  }
+
+  Future uploadPic() async{
+    if(_image != null){
+      String fileName = _image.path;
+      var spl = fileName.split("/");
+      StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child(spl[spl.length-1]);
+      StorageUploadTask uploadTask = firebaseStorageRef.putFile(_image);
+      StorageTaskSnapshot taskSnapshot=await uploadTask.onComplete;
+      await setImageToDB(spl[spl.length-1]);
+    }
+  }
+
+  Future<String> setImageToDB(String url) async {
+    return await Firestore.instance.collection('students').getDocuments().then((var asd){
+        for(int i=0; i<asd.documents.length ;++i){
+          if(asd.documents[i].data["mail"] == widget.mail){
+            databaseReference
+              .collection('students')
+              .document(asd.documents[i].documentID)
+              .updateData({'profilePicture': url,});
+          }
+        }
+      }
     );
   }
 

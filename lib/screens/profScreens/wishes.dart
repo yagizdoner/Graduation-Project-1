@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cse465ers/shared/loading.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -32,6 +33,7 @@ class _WishesState extends State<Wishes> {
     var nums = new List();
     var nm = new List();
     var surNm = new List();
+    var pics = new List();
     var val = await databaseReference.collection('Cources').getDocuments();
     for(int i=0 ; i<val.documents.length ; ++i){
       if(val.documents[i].data['Ders Adı'] == widget.name && 
@@ -49,10 +51,29 @@ class _WishesState extends State<Wishes> {
         if(val.documents[j].data["univercity"]==widget.uni && val.documents[j].data["studentNumber"]==nums[i]){
           nm.add(val.documents[j].data["name"]);
           surNm.add(val.documents[j].data["surname"]);
+          String n = val.documents[j].data["profilePicture"];
+          if(n != "no"){
+            var ref = FirebaseStorage.instance.ref().child(n);
+            await ref.getDownloadURL().then((val) => setState(() {
+              String url = val;
+              var image = Image.network(
+                url,
+                fit: BoxFit.cover,
+              );
+              pics.add(image);
+            }));
+          }
+          else{
+            var image = Image(
+              image: AssetImage('assets/profile.png'),
+              fit: BoxFit.cover,
+            );
+            pics.add(image);
+          }
         }
       }
     }
-    return [nums,nm,surNm];
+    return [nums,nm,surNm,pics];
   }
 
   @override
@@ -93,7 +114,7 @@ class _WishesState extends State<Wishes> {
                   child: SingleChildScrollView(
                     child: Column(
                       children:
-                        studentRow(data[0], data[1], data[2])
+                        studentRow(data[0], data[1], data[2],data[3])
                     ),
                   ),
                 ),
@@ -110,16 +131,16 @@ class _WishesState extends State<Wishes> {
     setState(() {});
   }
 
-  List<Widget> studentRow(code, name, surname){
+  List<Widget> studentRow(code, name, surname, pics){
     List<Widget> list = new List();
     for(int i=0; i<code.length ;++i){
-      list.add(createStudentRow(code[i], name[i], surname[i]));
+      list.add(createStudentRow(code[i], name[i], surname[i], pics[i]));
       list.add(SizedBox(height:10,));
     }
     return list;
   }
 
-  Slidable createStudentRow(String id, String na, String su){
+  Slidable createStudentRow(String id, String na, String su, pic){
     return Slidable(
         actionPane: SlidableStrechActionPane(),
         actionExtentRatio: 0.25,
@@ -128,7 +149,13 @@ class _WishesState extends State<Wishes> {
           child: ListTile(
             leading: CircleAvatar(
               backgroundColor: Colors.indigoAccent,
-              child: Text(na[0]+su[0]),
+              child: ClipOval(
+                child: new SizedBox(
+                  width: MediaQuery.of(context).size.width/4,
+                  height: MediaQuery.of(context).size.height/10,
+                  child: pic,
+                ),
+              ),
               foregroundColor: Colors.white,
             ),
             title: Text(na + " " + su),
