@@ -137,7 +137,8 @@ class _SendMessageState extends State<SendMessage> {
   }
 
   void sendMess(String mes) async {
-    var currDt = DateTime.now();
+    var dateUtc = DateTime.now().toUtc();
+    var currDt = dateUtc.toLocal();
     var year = currDt.year;
     var mon = currDt.month;
     var day = currDt.day;
@@ -145,7 +146,7 @@ class _SendMessageState extends State<SendMessage> {
     var min = currDt.minute;
     var sec = currDt.second;
     String date = day.toString()+"-"+mon.toString()+"-"+year.toString()
-            +"-"+(hour+3).toString()+"-"+min.toString()+"-"+sec.toString();
+            +"-"+hour.toString()+"-"+min.toString()+"-"+sec.toString();
 
     // Akademisyene Yaz
     QuerySnapshot _myDoc = await Firestore.instance.collection('profs').getDocuments();

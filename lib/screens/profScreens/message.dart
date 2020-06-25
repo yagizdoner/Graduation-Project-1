@@ -112,7 +112,7 @@ class _MessageState extends State<Message> {
         ),
       ));
     }
-    for(int i=0; i<name.length ;++i){
+    for(int i=name.length-1; i>=0 ;--i){
       list.add(createCourseRow(name[i], code[i], mess[i],dates[i]));
       list.add(SizedBox(height:10,));
     }
@@ -168,7 +168,7 @@ class _MessageState extends State<Message> {
                 color: Colors.red,
                 icon: Icons.delete,
                 onTap: ((){
-                  showAlertDialogTF(context, id+" - "+name, name, id, message);
+                  showAlertDialogTF(context, id+" - "+name, name, id, message,date);
                 }) ,
               ),
             ],
@@ -190,7 +190,7 @@ class _MessageState extends State<Message> {
     );
   }
 
-  showAlertDialogTF(BuildContext context, String message, name, id, mess) {
+  showAlertDialogTF(BuildContext context, String message, name, id, mess,dat) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -201,7 +201,7 @@ class _MessageState extends State<Message> {
             CupertinoDialogAction(
               child: Text("Sil"),
               onPressed:  () {
-                String ms = id+"@"+name+"@"+mess;
+                String ms = dat+"@"+id+"@"+name+"@"+mess;
                 List m = new List();
                 m.add(ms);
                 getDocId().then((String result){
