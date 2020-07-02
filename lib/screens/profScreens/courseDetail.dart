@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pie_chart/pie_chart.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class CourseDetail extends StatefulWidget {
@@ -244,7 +245,6 @@ class _CourseDetailState extends State<CourseDetail> {
   List<Widget> createRows(name,surname,code,ist,kont, pics){
     List<Widget> list = new List();
     // Bilgi Ekranı Burası...
-    int kalanKont = int.parse(kont) - (int.parse(ist) + code.length);
     list.add(Container(
       color: Colors.blue[200],
       width: MediaQuery.of(context).size.width,
@@ -252,14 +252,11 @@ class _CourseDetailState extends State<CourseDetail> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children:[
-          Text("Derse Kayıtlı Toplam Öğrenci Sayısı : "+ code.length.toString()),
+          chart(int.parse(ist),int.parse(kont), code.length),
           SizedBox(height: MediaQuery.of(context).size.height/50),
-          Text("Derse Kayıt Olmak İsteyen Öğrenci Sayısı : "+ist.toString()),
-          SizedBox(height: MediaQuery.of(context).size.height/50),
-          Text("Dersin Kontenjan Durumu : " + "(" +kalanKont.toString() + "/" + kont + ")"),
         ],
       ),
-      height: MediaQuery.of(context).size.height/7,
+      height: MediaQuery.of(context).size.height/4,
     ));
     
     for(int i=0; i<code.length ;++i){
@@ -342,6 +339,39 @@ class _CourseDetailState extends State<CourseDetail> {
     );
   }
 
+  PieChart chart(int istek, int kont, int mevcut){
+    int kalanKont = kont - (istek + mevcut);
+    Map<String, double> dataMap = Map();
+    List<Color> colorList = [
+      Colors.red,
+      Colors.green,
+      Colors.yellow[300],
+    ];
+    dataMap.putIfAbsent("Mevcut ($mevcut)", () => mevcut.toDouble());
+    dataMap.putIfAbsent("İstek ($istek)", () => istek.toDouble());
+    dataMap.putIfAbsent("Boş Kontenjan ($kalanKont)", () => kalanKont.toDouble());
+    
+    return PieChart(
+      dataMap: dataMap,
+      animationDuration: Duration(milliseconds: 800),
+      chartLegendSpacing: 32.0,
+      chartRadius: MediaQuery.of(context).size.width / 3,
+      showChartValuesInPercentage: true,
+      showChartValues: true,
+      showChartValuesOutside: false,
+      chartValueBackgroundColor: Colors.grey[200],
+      colorList: colorList,
+      showLegends: true,
+      legendPosition: LegendPosition.right,
+      decimalPlaces: 1,
+      showChartValueLabel: false,
+      initialAngle: 0,
+      chartValueStyle: defaultChartValueStyle.copyWith(
+        color: Colors.blueGrey[900].withOpacity(0.9),
+      ),
+      chartType: ChartType.disc,
+    );
+  }
   
 
   _onRefresh() async{

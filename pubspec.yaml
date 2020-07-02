@@ -33,6 +33,7 @@ dependencies:
   dropdownfield: ^1.0.3
   image_picker: ^0.6.7+2
   firebase_storage: ^3.1.6
+  pie_chart: ^3.1.1
 
 dev_dependencies:
   flutter_test:
