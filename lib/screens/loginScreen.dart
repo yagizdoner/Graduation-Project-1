@@ -97,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               cursorColor: Color(0xFF033140),
                               validator: (val) => val.isEmpty ? 'Lütfen Mail Giriniz' : null,
                               onChanged: (val) {
-                                setState(() => email = val);
+                                setState(() => email = val.trimRight());
                               },
                             ),
                           ),
@@ -215,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
               RaisedButton(
                 color: Color(0xFF033140),
                 child: Container(
-                  width: MediaQuery.of(context).size.width/3.6,
+                  width: MediaQuery.of(context).size.width/3,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -223,7 +223,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Icons.create,
                         color: Colors.white,
                       ),
-                      SizedBox(width:MediaQuery.of(context).size.height/200),
+                      SizedBox(width:MediaQuery.of(context).size.width/100),
                       Text(
                         'Akademisyen\nKayıt',
                         style: TextStyle(
@@ -243,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
               RaisedButton(
                 color: Color(0xFF033140),
                 child: Container(
-                  width: MediaQuery.of(context).size.height/7,
+                  width: MediaQuery.of(context).size.width/5,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -251,7 +251,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Icons.create,
                         color: Colors.white,
                       ),
-                      SizedBox(width: MediaQuery.of(context).size.height/200,),
+                      SizedBox(width: MediaQuery.of(context).size.width/100,),
                       Text(
                         'Öğrenci\nKayıt',
                         style: TextStyle(
@@ -271,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
               RaisedButton(
                 color: Color(0xFF033140),
                 child: Container(
-                  width: MediaQuery.of(context).size.height/6.8,
+                  width: MediaQuery.of(context).size.width/4.5,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -279,7 +279,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Icons.info_outline,
                         color: Colors.white,
                       ),
-                      SizedBox(width: MediaQuery.of(context).size.height/200,),
+                      SizedBox(width: MediaQuery.of(context).size.width/100,),
                       Text(
                         'Şifremi\nUnuttum',
                         style: TextStyle(

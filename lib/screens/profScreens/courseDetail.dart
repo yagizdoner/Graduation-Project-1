@@ -190,7 +190,7 @@ class _CourseDetailState extends State<CourseDetail> {
                         Icons.message,
                         color: Colors.white,
                       ),
-                      SizedBox(width:MediaQuery.of(context).size.height/40),
+                      SizedBox(width:MediaQuery.of(context).size.width/40),
                       Text(
                         'Sınıfa\nMesaj Gönder',
                         style: TextStyle(

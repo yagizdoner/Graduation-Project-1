@@ -116,7 +116,7 @@ class _StudentScState extends State<StudentSc> {
                         Icons.library_books,
                         color: Colors.white,
                       ),
-                      SizedBox(width:MediaQuery.of(context).size.height/200),
+                      SizedBox(width:MediaQuery.of(context).size.width/100),
                       Text(
                         'Derslerim',
                         style: TextStyle(
@@ -133,7 +133,7 @@ class _StudentScState extends State<StudentSc> {
               RaisedButton(
                 color: Color(0xFF033140),
                 child: Container(
-                  width: MediaQuery.of(context).size.height/7,
+                  width: MediaQuery.of(context).size.width/4.5,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -141,7 +141,7 @@ class _StudentScState extends State<StudentSc> {
                         Icons.message,
                         color: Colors.white,
                       ),
-                      SizedBox(width: MediaQuery.of(context).size.height/200,),
+                      SizedBox(width: MediaQuery.of(context).size.width/100,),
                       Text(
                         'Mesajlar',
                         style: TextStyle(
@@ -158,7 +158,7 @@ class _StudentScState extends State<StudentSc> {
               RaisedButton(
                 color: Color(0xFF033140),
                 child: Container(
-                  width: MediaQuery.of(context).size.height/6.8,
+                  width: MediaQuery.of(context).size.width/4.5,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -166,7 +166,7 @@ class _StudentScState extends State<StudentSc> {
                         Icons.person,
                         color: Colors.white,
                       ),
-                      SizedBox(width: MediaQuery.of(context).size.height/200,),
+                      SizedBox(width: MediaQuery.of(context).size.width/100,),
                       Text(
                         'Profil',
                         style: TextStyle(
