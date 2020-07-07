@@ -215,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
               RaisedButton(
                 color: Color(0xFF033140),
                 child: Container(
-                  width: MediaQuery.of(context).size.width/3,
+                  width: MediaQuery.of(context).size.width/3.2,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -243,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
               RaisedButton(
                 color: Color(0xFF033140),
                 child: Container(
-                  width: MediaQuery.of(context).size.width/5,
+                  width: MediaQuery.of(context).size.width/4.5,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[

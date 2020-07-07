@@ -101,7 +101,7 @@ class _CourseDetailState extends State<CourseDetail> {
                RaisedButton(
                 color: Color(0xFF033140),
                 child: Container(
-                  width: MediaQuery.of(context).size.width/4,
+                  width: MediaQuery.of(context).size.width/3,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -109,7 +109,7 @@ class _CourseDetailState extends State<CourseDetail> {
                         MdiIcons.update,
                         color: Colors.white,
                       ),
-                      SizedBox(width:MediaQuery.of(context).size.height/40),
+                      SizedBox(width:MediaQuery.of(context).size.width/40),
                       Text(
                         'Dersi\nGüncelle',
                         style: TextStyle(
