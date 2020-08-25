@@ -1,6 +1,8 @@
 # cse465ers
 
-A new Flutter project.
+This is my graduation project for Gebze Technical University.
+
+This Project is a Flutter - Firebase Project.
 
 ## Getting Started
 
